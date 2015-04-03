@@ -7,7 +7,7 @@ if ( !defined('ABSPATH') ) exit; // Do not run directly.
  * This module is loaded only when Memberships Pro is installed and activated in the theme. It can be accessed via $CSCore->Members.
  *
  * @since 4.1.1
- * @global $CSCore->PMP
+ * @global $CSCore->Members
  * @param none
  */
 

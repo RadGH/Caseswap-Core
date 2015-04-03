@@ -4,7 +4,7 @@ if ( !defined('ABSPATH') ) exit; // Do not run directly.
 /**
  * The primary class for the CaseSwap Core plugin.
  *
- * This class is reponsible for initializing all other classes and modules, and many general tasks.
+ * This class is responsible for initializing all other classes and modules, and many general tasks.
  *
  * @since 4.1.1
  * @global $CSCore
@@ -18,9 +18,10 @@ class CSCore {
    * Variables used by the plugin.
    */
 
-  // Plugin variables. These will be instantiated into objects of other php module classes during the plugins_loaded event.
-  public $CF7 = false; // Contact Form 7
-  public $Members = false; // Paid Memberships Pro (by WPMUDev)
+  // Objects.
+  public $Options = false; // Core module - Manages the options menus in the backend
+  public $CF7 = false; // Plugin module - Contact Form 7
+  public $Members = false; // Plugin module - Memberships Premium (by WPMUDev)
 
   /**
    * $this->__construct()
@@ -31,9 +32,13 @@ class CSCore {
    * @since 4.1.1
    */
   public function __construct() {
+
     add_action( 'plugins_loaded', array( &$this, 'plugins_loaded' ) );
 
     add_action( 'init', array( &$this, 'init_general' ) );
+
+    add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_admin_scripts' ) );
+    add_action( 'wp_enqueue_scripts', array( &$this, 'enqueue_theme_scripts' ) );
   }
 
   /**
@@ -48,7 +53,7 @@ class CSCore {
     if ( !defined('WPCF7_VERSION') ) {
       add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_cf7' ) );
     }else{
-      require_once( CSCore_PATH . '/classes/caseswap-cf7.php' );
+      require_once( CSCore_PATH . '/classes/modules/caseswap-cf7.php' );
 
       $this->CF7 = new CSCore_CF7();
     }
@@ -58,10 +63,16 @@ class CSCore {
     if ( !defined('WPCF7_VERSION') ) {
       add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_pmp' ) );
     }else{
-      require_once(CSCore_PATH . '/classes/caseswap-membership.php');
+      require_once( CSCore_PATH . '/classes/modules/caseswap-membership.php' );
 
       $this->Members = new CSCore_Members();
     }
+
+    // Core modules. No dependencies.
+    require_once(CSCore_PATH . '/classes/caseswap-options.php');
+    $this->Options = new CSCore_Options();
+
+    do_action( 'caseswap_modules_loaded', $this );
   }
 
   /**
@@ -71,6 +82,26 @@ class CSCore {
    */
   public function init_general() {
 
+  }
+
+  /**
+   * $this->enqueue_admin_scripts()
+   *
+   * Adds our plugin JavaScript and Stylesheet to the admin
+   */
+  public function enqueue_admin_scripts() {
+    wp_enqueue_script( "caseswap_admin", CSCore_URL . '/includes/cs_admin.js', array( 'jquery' ), CSCore_VERSION );
+    wp_enqueue_style( "caseswap_admin", CSCore_URL . '/includes/cs_admin.css', false, CSCore_VERSION );
+  }
+
+  /**
+   * $this->enqueue_theme_scripts()
+   *
+   * Adds our plugin JavaScript and Stylesheet to the front end theme
+   */
+  public function enqueue_theme_scripts() {
+    wp_enqueue_script( "caseswap_theme", CSCore_URL . '/includes/cs_theme.js', array( 'jquery' ), CSCore_VERSION );
+    wp_enqueue_style( "caseswap_theme", CSCore_URL . '/includes/cs_theme.css', false, CSCore_VERSION );
   }
 
   /**
@@ -84,6 +115,40 @@ class CSCore {
       <p><strong>CaseSwap Core:</strong> The plugin Contact Form 7 was not detected. The Contact Form 7 module will not be available.</p>
     </div>
     <?php
+  }
+
+  /**
+   * Displays an admin message of type  "updated" or "error".
+   *
+   * You can specify a type (updated/error), error code, textual message and a slug to identify the error. Or, you can simply pass one WP_Error object as the only parameter.
+   *
+   * @param (string or WP_Error) $type
+   * @param null $error_code
+   * @param null $text
+   * @param string $slug
+   */
+  public function admin_message( $type, $error_code = null, $text = null, $slug = 'caseswap' ) {
+    if ( is_object($type) && is_wp_error($type) ) {
+      // Retrieve values from WP_Error object
+      /** @noinspection PhpUndefinedMethodInspection */
+      $error_code = $type->get_error_code();
+      /** @noinspection PhpUndefinedMethodInspection */
+      $text = $type->get_error_message();
+      $type = 'error';
+    }else{
+      // Verify type/text values
+      $type = in_array( strtolower($type), array('updated', 'error') ) ? strtolower($type) : false;
+      $text = is_string($text) ? $text : "";
+    }
+
+    // Type should be either "updated" or "error", otherwise we'll append a notice to the message
+    if ( $type === false ) {
+      $type = 'error';
+      $text .= " <em>Notice: Invalid admin message type provided. Valid options: <code>updated</code>, <code>error</code>.</em>";
+    }
+
+    // Let the Settings API handle the rest!
+    add_settings_error( $slug, $error_code, $text, $type );
   }
 
 }
