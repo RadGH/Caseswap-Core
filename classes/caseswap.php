@@ -20,7 +20,7 @@ class CSCore {
 
   // Plugin variables. These will be instantiated into objects of other php module classes during the plugins_loaded event.
   public $CF7 = false; // Contact Form 7
-  public $PMP = false; // Paid Memberships Pro (by WPMUDev)
+  public $Members = false; // Paid Memberships Pro (by WPMUDev)
 
   /**
    * $this->__construct()
@@ -58,9 +58,9 @@ class CSCore {
     if ( !defined('WPCF7_VERSION') ) {
       add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_pmp' ) );
     }else{
-      require_once( CSCore_PATH . '/classes/caseswap-pmp.php' );
+      require_once(CSCore_PATH . '/classes/caseswap-members.php');
 
-      $this->PMP = new CSCore_PMP();
+      $this->Members = new CSCore_Members();
     }
   }
 
