@@ -58,7 +58,7 @@ class CSCore {
     if ( !defined('WPCF7_VERSION') ) {
       add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_pmp' ) );
     }else{
-      require_once(CSCore_PATH . '/classes/caseswap-members.php');
+      require_once(CSCore_PATH . '/classes/caseswap-membership.php');
 
       $this->Members = new CSCore_Members();
     }
