@@ -90,7 +90,66 @@ if ( !class_exists('CSCore_Options') ) {
     public function get_options( $provided_options = null ) {
       // Gets the options from the database, or if $provided_options is available, uses that instead
       $default_options = array(
+        'case-form' => "",
         'investigator-types' => array(),
+        'states' => array(
+          "Alabama",
+          "Alaska",
+          "Arizona",
+          "Arkansas",
+          "California",
+          "Colorado",
+          "Connecticut",
+          "Delaware",
+          "Florida",
+          "Georgia",
+          "Hawaii",
+          "Idaho",
+          "Illinois",
+          "Indiana",
+          "Iowa",
+          "Kansas",
+          "Kentucky",
+          "Louisiana",
+          "Maine",
+          "Maryland",
+          "Massachusetts",
+          "Michigan",
+          "Minnesota",
+          "Mississippi",
+          "Missouri",
+          "Montana",
+          "Nebraska",
+          "Nevada",
+          "New Hampshire",
+          "New Jersey",
+          "New Mexico",
+          "New York",
+          "North Carolina",
+          "North Dakota",
+          "Ohio",
+          "Oklahoma",
+          "Oregon",
+          "Pennsylvania",
+          "Rhode Island",
+          "South Carolina",
+          "South Dakota",
+          "Tennessee",
+          "Texas",
+          "Utah",
+          "Vermont",
+          "Virginia",
+          "Washington",
+          "West Virginia",
+          "Wisconsin",
+          "Wyoming",
+          "District of Columbia",
+          "Puerto Rico",
+          "Guam",
+          "American Samoa",
+          "U.S. Virgin Islands",
+          "Northern Mariana Islands"
+        )
       );
 
       if ( $provided_options === null ) {
@@ -98,14 +157,25 @@ if ( !class_exists('CSCore_Options') ) {
         $provided_options = (array) get_option('caseswap-options');
       }
 
-      $options = shortcode_atts( $default_options, $provided_options, 'caseswap-options' );
+      foreach( $default_options as $key => $value ) {
+        if ( !isset($provided_options[$key]) ) continue;
 
-      // Investigator types should be an array
-      if ( is_string($options['investigator-types']) ) {
-        $options['investigator-types'] = preg_split( "/\s*(\r\n|\r|\n)\s*/", $options['investigator-types'] );
-      }else if ( !is_array($options['investigator-types'] ) ) {
-        $options['investigator-types'] = array();
+        // Arrays which have been provided as strings will be split by new lines. Each line will be trimmed of leading/trailing space.
+        if ( is_array($default_options[$key]) && is_string($provided_options[$key]) ) {
+          $provided_options[$key] = preg_split( "/\s*(\r\n|\r|\n)+\s*/", trim($provided_options[$key])  );
+        }
+
+        // Ensure an array is always returned as an array. False or null will become empty, while anything else will use type casting.
+        if ( is_array($default_options[$key]) ) {
+          if ( $provided_options[$key] === false || $provided_options[$key] === null ) {
+            $provided_options[$key] = array();
+          }else{
+            $provided_options[$key] = (array) $provided_options[$key];
+          }
+        }
       }
+
+      $options = shortcode_atts( $default_options, $provided_options, 'caseswap-options' );
 
       return $options;
     }
@@ -133,6 +203,14 @@ if ( !class_exists('CSCore_Options') ) {
 
       $options = $this->get_options();
 
+      $args = array(
+        'post_type' => 'wpcf7_contact_form',
+        'post_status' => 'publish',
+        'orderby' => 'title',
+        'order' => 'asc',
+      );
+      $contact_forms = get_posts( $args );
+
       ?>
       <div class="wrap">
         <h2><?php echo esc_html($title); ?></h2>
@@ -142,7 +220,47 @@ if ( !class_exists('CSCore_Options') ) {
           <table class="form-table caseswap-form-table">
             <tbody>
 
-            <!-- Investigator Types -->
+            <!-- Select: Submit Case (Contact Form) -->
+            <tr>
+              <td style="width: 220px;">
+                <strong><label for="cs_options_case-form">New Case Form</label></strong>
+                <p class="description"><small>Managed by <a href="<?php echo esc_attr( admin_url('admin.php?page=wpcf7') ); ?>">Contact Form 7</a>.</small></p>
+              </td>
+              <td>
+                <select name="cs_options[case-form]" id="cs_options_case-form">
+                  <option value="">&ndash; Select &ndash;</option>
+                  <?php
+                  foreach( $contact_forms as $post ) {
+                    echo sprintf(
+                      '<option value="%s" %s>%s</option>',
+                      esc_attr($post->ID),
+                      selected($post->ID, $options['case-form'], false),
+                      esc_html($post->post_title)
+                    );
+                  }
+                  ?>
+                </select>
+
+                <p class="hide-if-no-js"><a href="#" onclick="jQuery('#cf7-form-help').show(); jQuery(this).hide(); return false">View Contact Form Requirements</a></p>
+
+                <div id="cf7-form-help" class="hide-if-js">
+                  <p>Contact form should have the following fields:</p>
+
+                  <ul class="ul-disc">
+                    <li><code>name</code> (Text)</li>
+                    <li><code>email</code> (Text)</li>
+                    <li><code>investigator_type</code> (* Dropdown)</li>
+                    <li><code>state</code> (* Dropdown)</li>
+                    <li><code>message</code> (Textarea)</li>
+                    <li><code>contact_method</code> (Text)</li>
+                  </ul>
+
+                  <p class="description">* These fields will have values added automatically using values from the fields below. Any value you set will be overwritten.</p>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Textarea: Investigator Types -->
             <tr>
               <td style="width: 220px;">
                 <strong><label for="cs_options_investigator-types">Investigation Types</label></strong>
@@ -152,7 +270,21 @@ if ( !class_exists('CSCore_Options') ) {
                 <textarea class="wide" name="cs_options[investigator-types]" id="cs_options_investigator-types" cols="80" rows="6"><?php
                   echo esc_textarea( implode( "\n", $options['investigator-types'] ) );
                 ?></textarea>
-                <p class="description">Enter one investigator type per line.</p>
+                <p class="description">One investigator type per line.</p>
+              </td>
+            </tr>
+
+            <!-- Textarea: States -->
+            <tr>
+              <td style="width: 220px;">
+                <strong><label for="cs_options_states">States</label></strong>
+                <p class="description"><small>These states will be available for investigators during sign up. Only states which have at least one investigator will appear for visitors submitting a new case.</small></p>
+              </td>
+              <td>
+                <textarea class="wide" name="cs_options[states]" id="cs_options_states" cols="80" rows="6"><?php
+                  echo esc_textarea( implode( "\n", $options['states'] ) );
+                ?></textarea>
+                <p class="description">One state per line.</p>
               </td>
             </tr>
 
