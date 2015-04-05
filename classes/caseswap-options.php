@@ -255,7 +255,7 @@ if ( !class_exists('CSCore_Options') ) {
                     <li><code>contact_method</code> (Text)</li>
                   </ul>
 
-                  <p class="description">* These fields will have values added automatically using values from the fields below. Any value you set will be overwritten.</p>
+                  <p class="description">* These fields will have values added automatically using the fields below. Any value you set will be overwritten.</p>
                 </div>
               </td>
             </tr>
