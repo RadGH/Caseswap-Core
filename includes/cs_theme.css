@@ -1,0 +1,28 @@
+.form-fields {
+  max-width: 640px;
+}
+
+.form-fields .row {
+  margin: 10px 0;
+  clear: both;
+}
+
+.form-fields .col {
+  float: left;
+  width: 100%;
+}
+
+@media ( min-width: 600px ) {
+  .form-fields .row-2 .col {
+    width: 50%;
+  }
+}
+
+.form-fields label,
+.form-fields .wpcf7-form-control-wrap,
+.form-fields .wpcf7-submit {
+  margin: 0 10px;
+  display: block;
+}
+
+.form-fields br { display: none; }
