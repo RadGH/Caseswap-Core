@@ -1,5 +1,10 @@
 jQuery(function() {
 
+  init_form_dirty_notification();
+
+});
+
+function init_form_dirty_notification() {
   var $form = jQuery('form.caseswap-form');
   var form_dirty = false;
 
@@ -11,11 +16,13 @@ jQuery(function() {
 
   $form.on('change', 'input, textarea, checkbox, select', make_dirty);
 
-  window.onbeforeunload = function() {
-    console.log('Leaving page', form_dirty);
+  $form.on('submit', function(e) {
+    form_dirty = false;
+  });
+
+  window.onbeforeunload = function(e) {
     if ( form_dirty === true ) {
       return 'You have not yet saved your changes.';
     }
   };
-
-});
+}
