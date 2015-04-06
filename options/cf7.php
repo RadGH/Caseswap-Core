@@ -14,6 +14,8 @@ global $CSCore;
 
 $options = $CSCore->Options->get_options();
 
+
+// Get array of contact form posts, used to build a <select> menu
 $args = array(
   'post_type' => 'wpcf7_contact_form',
   'post_status' => 'publish',
