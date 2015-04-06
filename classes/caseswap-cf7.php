@@ -24,76 +24,25 @@ if ( !class_exists('CSCore_CF7') ) {
 
    public function format_tag( $tag, $exec ) {
      if ( is_admin() ) return $tag;
- /*
- array(10) {
-   ["type"]=>
-   string(5) "text*"
-   ["basetype"]=>
-   string(4) "text"
-   ["name"]=>
-   string(4) "name"
-   ["options"]=>
-   array(4) {
-       [0]=>
-     string(10) "id:cs-name"
-     [1]=>
-     string(17) "class:field-input"
-     [2]=>
-     string(16) "class:field-text"
-     [3]=>
-     string(11) "placeholder"
-   }
-   ["raw_values"]=>
-   array(1) {
-       [0]=>
-     string(9) "Full name"
-   }
-   ["values"]=>
-   array(1) {
-       [0]=>
-     string(9) "Full name"
-   }
-   ["pipes"]=>
-   object(WPCF7_Pipes)#1906 (1) {
-   ["pipes":"WPCF7_Pipes":private]=>
-     array(1) {
-       [0]=>
-       object(WPCF7_Pipe)#1913 (2) {
-       ["before"]=>
-         string(9) "Full name"
-         ["after"]=>
-         string(9) "Full name"
-       }
-     }
-   }
- ["labels"]=>
- array(1) {
- [0]=>
- string(9) "Full name"
- }
-   ["attr"]=>
-   string(0) ""
-   ["content"]=>
-   string(0) ""
- }
- */
+
      if ( $tag['basetype'] == 'select' ) {
-
-       $options = $this->cached_options;
-
-       if ( $options === false ) {
+       // Get options, specifically to access the state/investigator type values
+       // We only do this once.
+       if ( $this->cached_options === false ) {
          global $CSCore;
 
          $this->cached_options = $CSCore->Options->get_options();
        }
 
+       // If the tag name is investigator_type or state, or a plurral version, or using hyphens, replace values
        switch( $tag['name'] ) {
          case 'investigator_type': case 'investigator-type':
-           $values = $options['investigator-types'];
+         case 'investigator_types': case 'investigator-types':
+           $values = $this->cached_options['investigator-types'];
            break;
 
          case 'states':case 'state':
-           $values = $options['states'];
+           $values = $this->cached_options['states'];
            break;
 
          default:
@@ -101,12 +50,15 @@ if ( !class_exists('CSCore_CF7') ) {
            break;
        }
 
+       // If our options do not have a value, do nothing. This shouldn't be the case unless the options are invalid.
        if ( !$values ) return $tag;
 
+       // Update the values for the dropdown. We don't use pipes, the values and labels are identical.
        $tag['raw_values'] = $values;
        $tag['values'] = $values;
        $tag['labels'] = $values;
 
+       // Still overwrite pipes, even though we don't use them.
        if ( WPCF7_USE_PIPE ) {
          $pipes = new WPCF7_Pipes( $values );
          $tag['pipes'] = $pipes;
