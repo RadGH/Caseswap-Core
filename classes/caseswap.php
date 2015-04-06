@@ -20,8 +20,7 @@ class CSCore {
 
   // Objects.
   public $Options = false; // Core module - Manages the options menus in the backend
-  public $CF7 = false; // Plugin module - Contact Form 7
-  public $Members = false; // Plugin module - Memberships Premium (by WPMUDev)
+  public $Membership = false; // Plugin module - Memberships Premium (by WPMUDev)
 
   /**
    * $this->__construct()
@@ -49,23 +48,13 @@ class CSCore {
    * @since 4.1.1
    */
   public function plugins_loaded() {
-    // Initialize Contact Form 7 module, or give a warning
-    if ( !defined('WPCF7_VERSION') ) {
-      add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_cf7' ) );
-    }else{
-      require_once( CSCore_PATH . '/classes/modules/caseswap-cf7.php' );
-
-      $this->CF7 = new CSCore_CF7();
-    }
-
-
     // Initialize Paid Memberships Pro module, or give a warning
-    if ( !defined('WPCF7_VERSION') ) {
-      add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_pmp' ) );
+    if ( !function_exists('set_membership_url') ) {
+      add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_membership_premium' ) );
     }else{
-      require_once( CSCore_PATH . '/classes/modules/caseswap-membership.php' );
+      require_once( CSCore_PATH . '/classes/modules/caseswap-membership-premium.php' );
 
-      $this->Members = new CSCore_Members();
+      $this->Membership = new CSCore_Members();
     }
 
     // Core modules. No dependencies.
@@ -105,14 +94,14 @@ class CSCore {
   }
 
   /**
-   * $this->admin_warning_no_plugin_cf7()
+   * $this->admin_warning_no_plugin_membership_premium()
    *
-   * Displays an error that Contact Form 7 has not been loaded.
+   * Displays an error that Membership Premium has not been loaded.
    */
-  public function admin_warning_no_plugin_cf7() {
+  public function admin_warning_no_plugin_membership_premium() {
     ?>
     <div class="error">
-      <p><strong>CaseSwap Core:</strong> The plugin Contact Form 7 was not detected. The Contact Form 7 module will not be available.</p>
+      <p><strong>CaseSwap Core:</strong> The plugin Membership Premium (by WPMU Dev) is not active. The membership module will not be loaded.</p>
     </div>
     <?php
   }

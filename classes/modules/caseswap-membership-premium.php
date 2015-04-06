@@ -2,12 +2,12 @@
 if ( !defined('ABSPATH') ) exit; // Do not run directly.
 
 /**
- * Module for CaseSwap Core which allows Memberships Premium (by WPMUDev) integration.
+ * Module for CaseSwap Core which allows Membership Premium (by WPMU Dev) integration.
  *
- * This module is loaded only when Memberships Pro is installed and activated in the theme. It can be accessed via $CSCore->Members.
+ * This module is loaded only when Membership Premium is installed and activated in the theme. It can be accessed via $CSCore->Membership.
  *
  * @since 4.1.1
- * @global $CSCore->Members
+ * @global $CSCore->Membership
  * @param none
  */
 
