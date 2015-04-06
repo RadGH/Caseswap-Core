@@ -26,6 +26,94 @@ if ( !class_exists('CSCore_Options') ) {
       ),
     );
 
+    public $option_pages = array(
+      'settings' => array(
+        'name' => 'Settings',
+        'file' => '/options/settings.php',
+        'fields' => array(
+          'investigator-types',
+          'states',
+        ),
+      ),
+      'content' => array(
+        'name' => 'Content',
+        'file' => '/options/content.php',
+        'fields' => array(
+        ),
+      ),
+      'cf7' => array(
+        'name' => 'Plugin: CF7',
+        'file' => '/options/cf7.php',
+        'fields' => array(
+          'cf7-form-id',
+          'cf7-state-key',
+          'cf7-investigator-key',
+        ),
+      ),
+    );
+
+    public $default_options = array(
+      'investigator-types' => array(),
+      'states' => array(
+        "Alabama",
+        "Alaska",
+        "Arizona",
+        "Arkansas",
+        "California",
+        "Colorado",
+        "Connecticut",
+        "Delaware",
+        "Florida",
+        "Georgia",
+        "Hawaii",
+        "Idaho",
+        "Illinois",
+        "Indiana",
+        "Iowa",
+        "Kansas",
+        "Kentucky",
+        "Louisiana",
+        "Maine",
+        "Maryland",
+        "Massachusetts",
+        "Michigan",
+        "Minnesota",
+        "Mississippi",
+        "Missouri",
+        "Montana",
+        "Nebraska",
+        "Nevada",
+        "New Hampshire",
+        "New Jersey",
+        "New Mexico",
+        "New York",
+        "North Carolina",
+        "North Dakota",
+        "Ohio",
+        "Oklahoma",
+        "Oregon",
+        "Pennsylvania",
+        "Rhode Island",
+        "South Carolina",
+        "South Dakota",
+        "Tennessee",
+        "Texas",
+        "Utah",
+        "Vermont",
+        "Virginia",
+        "Washington",
+        "West Virginia",
+        "Wisconsin",
+        "Wyoming",
+        "District of Columbia",
+        "Puerto Rico",
+        "Guam",
+        "American Samoa",
+        "U.S. Virgin Islands",
+        "Northern Mariana Islands"
+      )
+    );
+
 
 
     /**
@@ -80,83 +168,21 @@ if ( !class_exists('CSCore_Options') ) {
      */
     public function get_options( $provided_options = null ) {
       // Gets the options from the database, or if $provided_options is available, uses that instead
-      $default_options = array(
-        'investigator-types' => array(),
-        'states' => array(
-          "Alabama",
-          "Alaska",
-          "Arizona",
-          "Arkansas",
-          "California",
-          "Colorado",
-          "Connecticut",
-          "Delaware",
-          "Florida",
-          "Georgia",
-          "Hawaii",
-          "Idaho",
-          "Illinois",
-          "Indiana",
-          "Iowa",
-          "Kansas",
-          "Kentucky",
-          "Louisiana",
-          "Maine",
-          "Maryland",
-          "Massachusetts",
-          "Michigan",
-          "Minnesota",
-          "Mississippi",
-          "Missouri",
-          "Montana",
-          "Nebraska",
-          "Nevada",
-          "New Hampshire",
-          "New Jersey",
-          "New Mexico",
-          "New York",
-          "North Carolina",
-          "North Dakota",
-          "Ohio",
-          "Oklahoma",
-          "Oregon",
-          "Pennsylvania",
-          "Rhode Island",
-          "South Carolina",
-          "South Dakota",
-          "Tennessee",
-          "Texas",
-          "Utah",
-          "Vermont",
-          "Virginia",
-          "Washington",
-          "West Virginia",
-          "Wisconsin",
-          "Wyoming",
-          "District of Columbia",
-          "Puerto Rico",
-          "Guam",
-          "American Samoa",
-          "U.S. Virgin Islands",
-          "Northern Mariana Islands"
-        )
-      );
-
       if ( $provided_options === null ) {
         // Pull in existing options from the database as default
         $provided_options = (array) get_option('caseswap-options');
       }
 
-      foreach( $default_options as $key => $value ) {
+      foreach( $this->default_options as $key => $value ) {
         if ( !isset($provided_options[$key]) ) continue;
 
         // Arrays which have been provided as strings will be split by new lines. Each line will be trimmed of leading/trailing space.
-        if ( is_array($default_options[$key]) && is_string($provided_options[$key]) ) {
+        if ( is_array($this->default_options[$key]) && is_string($provided_options[$key]) ) {
           $provided_options[$key] = preg_split( "/\s*(\r\n|\r|\n)+\s*/", trim($provided_options[$key])  );
         }
 
         // Ensure an array is always returned as an array. False or null will become empty, while anything else will use type casting.
-        if ( is_array($default_options[$key]) ) {
+        if ( is_array($this->default_options[$key]) ) {
           if ( $provided_options[$key] === false || $provided_options[$key] === null ) {
             $provided_options[$key] = array();
           }else{
@@ -165,7 +191,7 @@ if ( !class_exists('CSCore_Options') ) {
         }
       }
 
-      $options = shortcode_atts( $default_options, $provided_options, 'caseswap-options' );
+      $options = shortcode_atts( $this->default_options, $provided_options, 'caseswap-options' );
 
       return $options;
     }
@@ -191,22 +217,11 @@ if ( !class_exists('CSCore_Options') ) {
     public function render_options_menu() {
       global $title;
 
-      $pages = array(
-        'settings' => array(
-          'name' => 'Settings',
-          'file' => '/options/settings.php',
-        ),
-        'content' => array(
-        'name' => 'Content',
-        'file' => '/options/content.php',
-        ),
-      );
-
       $section = isset($_REQUEST['cs_page']) ? stripslashes( $_REQUEST['cs_page'] ) : 'settings';
 
-      if ( !isset($pages[$section]) ) $section = 'settings';
+      if ( !isset($this->option_pages[$section]) ) $section = 'settings';
 
-      $template = $pages[$section]['file'];
+      $template = $this->option_pages[$section]['file'];
 
       ?>
       <div class="wrap">
@@ -216,7 +231,7 @@ if ( !class_exists('CSCore_Options') ) {
 
         <h2 class="nav-tab-wrapper">
           <?php
-          foreach( $pages as $key => $tab ) {
+          foreach( $this->option_pages as $key => $tab ) {
             echo sprintf(
               '<a href="%s" class="nav-tab %s">%s</a>',
               add_query_arg( array( 'cs_page' => $key ), $this->options_page_url ),
@@ -233,7 +248,7 @@ if ( !class_exists('CSCore_Options') ) {
           <input name="cs_page" value="<?php echo esc_attr($section); ?>" type="hidden"/>
           <input name="cs_nonce" value="<?php echo wp_create_nonce( "save-caseswap-" . $section ); ?>" type="hidden"/>
 
-          <?php include ( CSCore_PATH . $template ); ?>
+          <?php include( CSCore_PATH . $template ); ?>
 
           <p class="submit">
             <input class="button button-primary" type="submit" value="Save Changes" />
@@ -253,11 +268,22 @@ if ( !class_exists('CSCore_Options') ) {
       if ( !isset($_REQUEST['cs_options']) ) return;
       if ( !wp_verify_nonce( stripslashes($_REQUEST['cs_nonce']), 'save-caseswap-options') ) return;
 
-      $new_options = $this->get_options( stripslashes_deep($_REQUEST['cs_options']) );
+      $section = isset($_REQUEST['cs_page']) ? stripslashes( $_REQUEST['cs_page'] ) : false;
+      if ( !$section ) return;
+      if ( !isset($this->option_pages[$section]) ) return;
 
-      update_option( 'caseswap-options', $new_options );
+      $options = $this->get_options();
+      $submitted = $this->get_options( stripslashes_deep($_REQUEST['cs_options']) );
 
-      wp_redirect( add_query_arg( array('cs_message' => 'options-saved'), $this->options_page_url) );
+      // We only want to save the updated options for the page we clicked "Save changes" for.
+      foreach( $this->option_pages[$section]['fields'] as $key ) {
+        $options[$key] = $submitted[$key];
+      }
+
+      // Save the updated options
+      update_option( 'caseswap-options', $options );
+
+      wp_redirect( add_query_arg( array('cs_page' => $section, 'cs_message' => 'options-saved'), $this->options_page_url) );
       exit;
     }
   }
