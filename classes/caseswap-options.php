@@ -53,6 +53,9 @@ if ( !class_exists('CSCore_Options') ) {
     );
 
     public $default_options = array(
+      'cf7-form-id' => "",
+      'cf7-state-key' => "",
+      'cf7-investigator-key' => "",
       'investigator-types' => array(),
       'states' => array(
         "Alabama",
@@ -246,7 +249,7 @@ if ( !class_exists('CSCore_Options') ) {
 
           <input name="page" value="<?php echo esc_attr($this->options_page_slug); ?>" type="hidden"/>
           <input name="cs_page" value="<?php echo esc_attr($section); ?>" type="hidden"/>
-          <input name="cs_nonce" value="<?php echo wp_create_nonce( "save-caseswap-" . $section ); ?>" type="hidden"/>
+          <input name="cs_nonce" value="<?php echo wp_create_nonce( "save-caseswap-options" ); ?>" type="hidden"/>
 
           <?php include( CSCore_PATH . $template ); ?>
 
@@ -266,10 +269,10 @@ if ( !class_exists('CSCore_Options') ) {
     public function save_options_menu() {
       if ( !isset($_REQUEST['cs_nonce']) ) return;
       if ( !isset($_REQUEST['cs_options']) ) return;
+      if ( !isset($_REQUEST['cs_page']) ) return;
       if ( !wp_verify_nonce( stripslashes($_REQUEST['cs_nonce']), 'save-caseswap-options') ) return;
 
-      $section = isset($_REQUEST['cs_page']) ? stripslashes( $_REQUEST['cs_page'] ) : false;
-      if ( !$section ) return;
+      $section = stripslashes( $_REQUEST['cs_page'] );
       if ( !isset($this->option_pages[$section]) ) return;
 
       $options = $this->get_options();
@@ -277,7 +280,11 @@ if ( !class_exists('CSCore_Options') ) {
 
       // We only want to save the updated options for the page we clicked "Save changes" for.
       foreach( $this->option_pages[$section]['fields'] as $key ) {
-        $options[$key] = $submitted[$key];
+        if ( isset($submitted[$key]) ) {
+          $options[$key] = $submitted[$key];
+        }else{
+          $options[$key] = false;
+        }
       }
 
       // Save the updated options
