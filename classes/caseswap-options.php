@@ -44,10 +44,11 @@ if ( !class_exists('CSCore_Options') ) {
       ),
       */
       'cf7' => array(
-        'name' => 'Plugin: CF7',
+        'name' => 'Contact Form 7',
         'file' => '/options/cf7.php',
         'fields' => array(
           'cf7-form-id',
+          'cf7-success-page-id',
           'cf7-state-key',
           'cf7-investigator-key',
         ),
@@ -56,6 +57,7 @@ if ( !class_exists('CSCore_Options') ) {
 
     public $default_options = array(
       'cf7-form-id' => "",
+      'cf7-success-page-id' => "",
       'cf7-state-key' => "",
       'cf7-investigator-key' => "",
       'investigator-types' => array(),
