@@ -81,7 +81,6 @@ if ( !class_exists('CSCore_Options') ) {
     public function get_options( $provided_options = null ) {
       // Gets the options from the database, or if $provided_options is available, uses that instead
       $default_options = array(
-        'case-form' => "",
         'investigator-types' => array(),
         'states' => array(
           "Alabama",
@@ -177,7 +176,7 @@ if ( !class_exists('CSCore_Options') ) {
      */
     public function create_options_menu() {
       add_options_page(
-        'CaseSwap Options', // page title
+        'CaseSwap Core', // page title
         'CaseSwap Options', // menu name
         'edit_theme_options', // Capability Required
         $this->options_page_slug, // Slug
@@ -192,99 +191,51 @@ if ( !class_exists('CSCore_Options') ) {
     public function render_options_menu() {
       global $title;
 
-      $options = $this->get_options();
-
-      $args = array(
-        'post_type' => 'wpcf7_contact_form',
-        'post_status' => 'publish',
-        'orderby' => 'title',
-        'order' => 'asc',
+      $pages = array(
+        'settings' => array(
+          'name' => 'Settings',
+          'file' => '/options/settings.php',
+        ),
+        'content' => array(
+        'name' => 'Content',
+        'file' => '/options/content.php',
+        ),
       );
-      $contact_forms = get_posts( $args );
+
+      $section = isset($_REQUEST['cs_page']) ? stripslashes( $_REQUEST['cs_page'] ) : 'settings';
+
+      if ( !isset($pages[$section]) ) $section = 'settings';
+
+      $template = $pages[$section]['file'];
 
       ?>
       <div class="wrap">
         <h2><?php echo esc_html($title); ?></h2>
 
-        <form class="caseswap-form" id="caseswap-options-form" action="<?php echo esc_attr($this->options_page_url); ?>" method="post">
+        <br/>
 
-          <table class="form-table caseswap-form-table">
-            <tbody>
+        <h2 class="nav-tab-wrapper">
+          <?php
+          foreach( $pages as $key => $tab ) {
+            echo sprintf(
+              '<a href="%s" class="nav-tab %s">%s</a>',
+              add_query_arg( array( 'cs_page' => $key ), $this->options_page_url ),
+              $section == $key ? 'nav-tab-active' : '',
+              $tab['name']
+            );
+          }
+          ?>
+        </h2>
 
-            <!-- Select: Submit Case (Contact Form) -->
-            <tr>
-              <td style="width: 220px;">
-                <strong><label for="cs_options_case-form">New Case Form</label></strong>
-                <p class="description"><small>Managed by <a href="<?php echo esc_attr( admin_url('admin.php?page=wpcf7') ); ?>">Contact Form 7</a>.</small></p>
-              </td>
-              <td>
-                <select name="cs_options[case-form]" id="cs_options_case-form">
-                  <option value="">&ndash; Select &ndash;</option>
-                  <?php
-                  foreach( $contact_forms as $post ) {
-                    echo sprintf(
-                      '<option value="%s" %s>%s</option>',
-                      esc_attr($post->ID),
-                      selected($post->ID, $options['case-form'], false),
-                      esc_html($post->post_title)
-                    );
-                  }
-                  ?>
-                </select>
+        <form class="caseswap-form" id="caseswap-options-form" action="<?php echo esc_attr( add_query_arg( array( 'cs_page' => $section ), $this->options_page_url ) ); ?>" method="post">
 
-                <p class="hide-if-no-js"><a href="#" onclick="jQuery('#cf7-form-help').show(); jQuery(this).hide(); return false">View Contact Form Requirements</a></p>
+          <input name="page" value="<?php echo esc_attr($this->options_page_slug); ?>" type="hidden"/>
+          <input name="cs_page" value="<?php echo esc_attr($section); ?>" type="hidden"/>
+          <input name="cs_nonce" value="<?php echo wp_create_nonce( "save-caseswap-" . $section ); ?>" type="hidden"/>
 
-                <div id="cf7-form-help" class="hide-if-js">
-                  <p>Contact form should have the following fields:</p>
-
-                  <ul class="ul-disc">
-                    <li><code>name</code> (Text)</li>
-                    <li><code>email</code> (Text)</li>
-                    <li><code>investigator_type</code> (* Dropdown)</li>
-                    <li><code>state</code> (* Dropdown)</li>
-                    <li><code>message</code> (Textarea)</li>
-                    <li><code>contact_method</code> (Text)</li>
-                  </ul>
-
-                  <p class="description">* These fields will have values added automatically using the fields below. Any value you set will be overwritten.</p>
-                </div>
-              </td>
-            </tr>
-
-            <!-- Textarea: Investigator Types -->
-            <tr>
-              <td style="width: 220px;">
-                <strong><label for="cs_options_investigator-types">Investigation Types</label></strong>
-                <p class="description"><small>Investigators who sign up may select one or more Investigation Type. When an email is sent, it is sent to any active member who has selected that Investigator Type.</small></p>
-              </td>
-              <td>
-                <textarea class="wide" name="cs_options[investigator-types]" id="cs_options_investigator-types" cols="80" rows="6"><?php
-                  echo esc_textarea( implode( "\n", $options['investigator-types'] ) );
-                ?></textarea>
-                <p class="description">One investigator type per line.</p>
-              </td>
-            </tr>
-
-            <!-- Textarea: States -->
-            <tr>
-              <td style="width: 220px;">
-                <strong><label for="cs_options_states">States</label></strong>
-                <p class="description"><small>These states will be available for investigators during sign up. Only states which have at least one investigator will appear for visitors submitting a new case.</small></p>
-              </td>
-              <td>
-                <textarea class="wide" name="cs_options[states]" id="cs_options_states" cols="80" rows="6"><?php
-                  echo esc_textarea( implode( "\n", $options['states'] ) );
-                ?></textarea>
-                <p class="description">One state per line.</p>
-              </td>
-            </tr>
-
-            </tbody>
-          </table>
+          <?php include ( CSCore_PATH . $template ); ?>
 
           <p class="submit">
-            <input name="page" value="<?php echo esc_attr($this->options_page_slug); ?>" type="hidden"/>
-            <input name="cs_nonce" value="<?php echo wp_create_nonce( "save-caseswap-options" ); ?>" type="hidden"/>
             <input class="button button-primary" type="submit" value="Save Changes" />
           </p>
 
