@@ -2,7 +2,7 @@
 if ( !defined('ABSPATH') ) exit; // Do not run directly.
 
 /**
- * Module for the options menus in the backend.
+ * Responsible for displaying the options menu in the backend.
  *
  * This module has no dependencies.
  *
@@ -10,15 +10,6 @@ if ( !defined('ABSPATH') ) exit; // Do not run directly.
  * @global $CSCore->Options
  * @param none
  */
-
-/*
-Private Investigator
-Background Investigator
-Due Diligence Investigator
-Missing Person Investigator
-Criminal Investigator
-Certified Fraud Examiner
-*/
 
 if ( !class_exists('CSCore_Options') ) {
   class CSCore_Options {
