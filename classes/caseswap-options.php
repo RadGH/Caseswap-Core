@@ -35,12 +35,14 @@ if ( !class_exists('CSCore_Options') ) {
           'states',
         ),
       ),
+      /*
       'content' => array(
         'name' => 'Content',
         'file' => '/options/content.php',
         'fields' => array(
         ),
       ),
+      */
       'cf7' => array(
         'name' => 'Plugin: CF7',
         'file' => '/options/cf7.php',
