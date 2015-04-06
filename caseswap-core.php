@@ -12,7 +12,7 @@ Copyright 2015 CaseSwap.com
 
 define( 'CSCore_VERSION', '1.0.4' );
 define( 'CSCore_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
-define( 'CSCore_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
+define( 'CSCore_PATH', dirname( __FILE__ ) );
 
 require_once( CSCore_PATH . '/classes/caseswap.php' );
 
