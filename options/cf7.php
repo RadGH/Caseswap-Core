@@ -4,6 +4,7 @@
  *
  * Fields managed:
  *   cf7-form-id
+ *   cf7-success-page-id
  *   cf7-state-key
  *   cf7-investigator-key
  *
@@ -29,8 +30,8 @@ $all_contact_forms = get_posts($args);
   <!-- Select: Contact Form ID -->
   <tr>
     <td style="width: 220px;">
-      <strong><label for="cs_options_investigator-types">Investigation Types</label></strong>
-      <p class="description"><small>Investigators who sign up may select one or more Investigation Type. When an email is sent, it is sent to any active member who has selected that Investigator Type.</small></p>
+      <strong><label for="cs_options_cf7-form-id">Submit Case form</label></strong>
+      <p class="description"><small>Forms managed by <a href="<?php echo esc_attr( admin_url( "admin.php?page=wpcf7" ) ); ?>">Contact Form 7</a>.</small></p>
     </td>
     <td>
       <select name="cs_options[cf7-form-id]" id="cs_options_cf7-form-id">
@@ -46,6 +47,7 @@ $all_contact_forms = get_posts($args);
         }
         ?>
       </select>
+
       <p class="hide-if-no-js"><a href="#" onclick="jQuery('#cf7-form-help').show(); jQuery(this).hide(); return false">View Contact Form Requirements</a></p>
 
       <div id="cf7-form-help" class="hide-if-js">
@@ -61,6 +63,26 @@ $all_contact_forms = get_posts($args);
         </ul>
 
         <p class="description">* These fields will have values added automatically using the values from the Settings page.</p>
+      </div>
+    </td>
+  </tr>
+
+  <!-- Select: Submission success page -->
+  <tr>
+    <td style="width: 220px;">
+      <strong><label for="cs_options_cf7-success-page-id">Success Page</label></strong>
+      <p class="description"><small>When form is sent OK, visitors are redirected to this page.</small></p>
+    </td>
+    <td>
+      <?php
+      $args = array(
+        'name' => 'cs_options[cf7-success-page-id]',
+        'show_option_none' => '&ndash; Select &ndash;',
+        'selected' => $options['cf7-success-page-id'],
+      );
+
+      wp_dropdown_pages( $args );
+      ?>
       </div>
     </td>
   </tr>
