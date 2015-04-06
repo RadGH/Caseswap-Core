@@ -22,6 +22,7 @@ class CSCore {
   public $Form = false; // Core module - Manages the front end form and submission
   public $Options = false; // Core module - Manages the options menus in the backend
   public $Membership = false; // Plugin module - Memberships Premium (by WPMUDev)
+  public $CF7 = false; // Plugin module - Contact Form 7 Integration
 
   /**
    * $this->__construct()
@@ -49,6 +50,16 @@ class CSCore {
    * @since 4.1.1
    */
   public function plugins_loaded() {
+    // Initialize Paid Memberships Pro module, or give a warning
+    if ( !defined('WPCF7_PLUGIN_DIR') ) {
+      add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_cf7' ) );
+    }else{
+      require_once( CSCore_PATH . '/classes/caseswap-cf7.php' );
+
+      $this->CF7 = new CSCore_CF7();
+    }
+
+
     // Initialize Paid Memberships Pro module, or give a warning
     if ( !function_exists('set_membership_url') ) {
       add_action( 'admin_notices', array( &$this, 'admin_warning_no_plugin_membership_premium' ) );
@@ -95,6 +106,19 @@ class CSCore {
   public function enqueue_theme_scripts() {
     wp_enqueue_script( "caseswap_theme", CSCore_URL . '/includes/cs_theme.js', array( 'jquery' ), CSCore_VERSION );
     wp_enqueue_style( "caseswap_theme", CSCore_URL . '/includes/cs_theme.css', false, CSCore_VERSION );
+  }
+
+  /**
+   * $this->admin_warning_no_plugin_cf7()
+   *
+   * Displays an error that Contact Form 7 has not been loaded.
+   */
+  public function admin_warning_no_plugin_cf7() {
+    ?>
+    <div class="error">
+      <p><strong>CaseSwap Core:</strong> The plugin Contact Form 7 is not active. Contact Form 7 integration will not be loaded.</p>
+    </div>
+    <?php
   }
 
   /**
