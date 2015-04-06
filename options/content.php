@@ -11,6 +11,7 @@ global $CSCore;
   <tbody>
 
   <!-- Textarea: Investigator Types -->
+  <?php /*
   <tr>
     <td style="width: 220px;">
       <strong><label for="cs_options_investigator-types">Investigation Types</label></strong>
@@ -20,6 +21,7 @@ global $CSCore;
       <p class="description">One investigator type per line.</p>
     </td>
   </tr>
+ */ ?>
 
   </tbody>
 </table>
