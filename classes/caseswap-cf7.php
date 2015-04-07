@@ -17,8 +17,8 @@ if ( !class_exists('CSCore_CF7') ) {
     public $cached_options = false;
 
     public function __construct() {
-      // This works. This is in the plugins_loaded event. You can use init here.
-     // $scanned_tag = apply_filters( 'wpcf7_form_tag', $scanned_tag, $this->exec );
+      // This is in the plugins_loaded event. You can use init hooks here.
+
      add_filter( 'wpcf7_form_tag',  array( &$this, 'format_tag'), 10, 2 );
    }
 

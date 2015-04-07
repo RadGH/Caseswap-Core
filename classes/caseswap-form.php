@@ -21,6 +21,7 @@ if ( !class_exists('CSCore_Form') ) {
      * Set up our options object. This is executed during the plugins_loaded hook.
      */
     public function __construct() {
+      // This is in the plugins_loaded event. You can use init hooks here.
       add_shortcode( 'caseswap_form', array(&$this, 'shortcode_caseswap_form') );
     }
 

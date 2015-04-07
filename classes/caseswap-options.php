@@ -124,9 +124,10 @@ if ( !class_exists('CSCore_Options') ) {
 
 
     /**
-     * Set up our options object. This is executed during the plugins_loaded hook.
+     * Set up our options object.
      */
     public function __construct() {
+      // This is in the plugins_loaded event. You can use init hooks here.
       $this->options_page_url = admin_url('options-general.php?page=' . $this->options_page_slug);
 
       add_action( 'admin_menu', array(&$this, 'display_admin_messages') );

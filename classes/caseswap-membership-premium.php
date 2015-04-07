@@ -15,7 +15,7 @@ if ( !class_exists('CSCore_Members') ) {
   class CSCore_Members {
 
     public function __construct() {
-      // This works. This is in the plugins_loaded event. You can use init here.
+      // This is in the plugins_loaded event. You can use init hooks here.
     }
 
   }
