@@ -21,6 +21,7 @@ class CSCore {
   // Objects.
   public $Form = false; // Core module - Manages the front end form and submission
   public $Options = false; // Core module - Manages the options menus in the backend
+  public $Users = false; // Core module - Adds and manages custom fields for investigator's user profiles
   public $Membership = false; // Plugin module - Memberships Premium (by WPMUDev)
   public $CF7 = false; // Plugin module - Contact Form 7 Integration
 
@@ -75,6 +76,9 @@ class CSCore {
 
     require_once(CSCore_PATH . '/classes/caseswap-form.php');
     $this->Form = new CSCore_Form();
+
+    require_once(CSCore_PATH . '/classes/caseswap-users.php');
+    $this->Users = new CSCore_Users();
 
     do_action( 'caseswap_modules_loaded', $this );
   }
