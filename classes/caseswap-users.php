@@ -18,21 +18,25 @@ if ( !class_exists('CSCore_Users') ) {
       // Show custom fields on the Edit User and Your Profile screens in the dashboard
       add_action( 'show_user_profile', array( &$this, 'render_user_custom_fields' ), 3 );
       add_action( 'edit_user_profile', array( &$this, 'render_user_custom_fields' ), 3 );
+
+      // Save custom fields from the above pages
+      add_action( 'edit_user_profile_update', array( &$this, 'save_user_custom_fields' ), 3 );
+      add_action( 'edit_user_profile_update', array( &$this, 'save_user_custom_fields' ), 3 );
     }
 
     public function render_user_custom_fields( $user ) {
       global $CSCore;
 
-      $state = get_user_meta( $user->ID, 'state' );
-      $types = get_user_meta( $user->ID, 'investigator-types' );
+      $state = get_user_meta( $user->ID, 'state', false );
+      $types = get_user_meta( $user->ID, 'investigator-types', false );
 
       $options = $CSCore->Options->get_options();
       $all_states = $options['states'];
       $all_types = $options['investigator-types'];
 
       ?>
-      <h3>CaseSwap Core - Investigator Settings:</h3>
-      <input name="cs_nonce" value=caseswap-update-user" type="hidden"/>
+      <h3>Investigator Preferences</h3>
+      <input name="cs_nonce" value="<?php echo wp_create_nonce('caseswap-update-user'); ?>" type="hidden"/>
 
       <table class="form-table">
         <tbody>
@@ -49,7 +53,7 @@ if ( !class_exists('CSCore_Users') ) {
                   echo sprintf(
                     '<option value="%s" %s>%s</option>',
                     esc_attr( $this_state ),
-                    selected( $state, $this_state, false ),
+                    selected( in_array($this_state, $state), true, false ),
                     esc_html( $this_state )
                   );
                 }
@@ -67,14 +71,13 @@ if ( !class_exists('CSCore_Users') ) {
                 <?php
                 foreach( $all_types as $this_type ) {
                   $html_id = 'cs-investigator-type-' . sanitize_title_with_dashes($this_type);
-                  $checked = in_array( $this_type, $types );
 
                   echo sprintf(
                     '<div class="cs_cb_item"><label for="%s"><input type="checkbox" name="cs_user[investigator-types][]" id="%s" value="%s" %s> %s</label></div>',
                     esc_attr($html_id),
                     esc_attr($html_id),
                     esc_attr( $this_type ),
-                    selected( $checked, true, false ),
+                    checked( in_array( $this_type, $types ), true, false ),
                     esc_html( $this_type )
                   );
                 }
@@ -85,9 +88,37 @@ if ( !class_exists('CSCore_Users') ) {
 
         </tbody>
       </table>
-
-      <p class="description" style="background: #fc0; color: #000;">Todo: Save the two fields above and implement them on the front end account page.</p>
       <?php
+    }
+
+
+    public function save_user_custom_fields( $user_id ) {
+      $nonce = isset($_REQUEST['cs_nonce']) ? stripslashes($_REQUEST['cs_nonce']) : false;
+      
+      // Did not fill out a form which had our fields?
+      if ( !$nonce ) return;
+      
+      // Filled out the correct form, but nonce invalid?
+      if ( !wp_verify_nonce( $nonce, 'caseswap-update-user') ) return;
+      
+      // Get values submitted
+      $submit_state = isset($_REQUEST['cs_user']['state'])              ? (array) stripslashes_deep($_REQUEST['cs_user']['state'])              : null;
+      $submit_types = isset($_REQUEST['cs_user']['investigator-types']) ? (array) stripslashes_deep($_REQUEST['cs_user']['investigator-types']) : null;
+
+      // Save each field. Each value is one meta value, do NOT use update_user_meta.
+      if ( $submit_state !== null ) {
+        delete_user_meta( $user_id, 'state' );
+        foreach( $submit_state as $val ) {
+          add_user_meta( $user_id, 'state', $val );
+        }
+      }
+
+      if ( $submit_types !== null ) {
+        delete_user_meta( $user_id, 'investigator-types' );
+        foreach( $submit_types as $val ) {
+          add_user_meta( $user_id, 'investigator-types', $val );
+        }
+      }
     }
 
   }
