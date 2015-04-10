@@ -190,16 +190,10 @@ class CSCore {
     $where_types = implode(", ", $wtype); // 'Private Investigator', 'Due Diligence Investigator'
 
 
-    // Create SQL
-    $sql = "SELECT";
+    // SQL to look up all users with a matching state and type, returns user IDs
+    $sql = "
+SELECT u.ID
 
-    if ( $count_only ) {
-      $sql .= " COUNT(*)"; // Get count
-    }else{
-      $sql .= " u.ID"; // Get user IDs
-    }
-
-    $sql .= "
 FROM {$wpdb->users} u
 
 JOIN {$wpdb->usermeta} types
@@ -219,16 +213,14 @@ GROUP BY u.ID
 
 LIMIT 2000;";
 
-    if ( $count_only ) {
-      return $wpdb->get_var( $sql );
-    }else{
-      return $wpdb->get_col( $sql );
-    }
+    // Get results as a flat array: [0, 1, 2]
+    $results = $wpdb->get_col( $sql );
 
-  }
+    // Allow filtering results further via plugins / modules
+    $results = apply_filters( 'cscore_filter_matching_investigators', $results, $this );
 
-  public function count_investigators( $states, $types ) {
-    return $this->get_investigators( $states, $types, true );
+    // Return the results
+    return $results;
   }
 
 }
