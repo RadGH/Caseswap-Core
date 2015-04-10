@@ -172,5 +172,64 @@ class CSCore {
     add_settings_error( $slug, $error_code, $text, $type );
   }
 
+
+  public function get_investigators( $states, $types, $count_only = false ) {
+    global $wpdb;
+
+    // Create list for states/types array comparison
+    $wstate = array();
+    foreach( (array) $states as $s ) {
+      $wstate[] = "'" . esc_sql($s) . "'"; // 'Oregon'
+    }
+    $where_states = implode(", ", $wstate); // 'Oregon', 'California'
+
+    $wtype = array();
+    foreach( (array) $types as $s ) {
+      $wtype[] = "'" . esc_sql($s) . "'"; // 'Private Investigator'
+    }
+    $where_types = implode(", ", $wtype); // 'Private Investigator', 'Due Diligence Investigator'
+
+
+    // Create SQL
+    $sql = "SELECT";
+
+    if ( $count_only ) {
+      $sql .= " COUNT(*)"; // Get count
+    }else{
+      $sql .= " u.ID"; // Get user IDs
+    }
+
+    $sql .= "
+FROM {$wpdb->users} u
+
+JOIN {$wpdb->usermeta} types
+  ON  ( types.user_id = u.ID )
+  AND ( types.meta_key = 'investigator-types' )
+
+JOIN {$wpdb->usermeta} states
+  ON  ( states.user_id = u.ID )
+  AND ( states.meta_key = 'state' )
+
+WHERE
+  ( states.meta_value IN ( {$where_states} ) )
+	AND
+	( types.meta_value IN ( {$where_types} ) )
+
+GROUP BY u.ID
+
+LIMIT 2000;";
+
+    if ( $count_only ) {
+      return $wpdb->get_var( $sql );
+    }else{
+      return $wpdb->get_col( $sql );
+    }
+
+  }
+
+  public function count_investigators( $states, $types ) {
+    return $this->get_investigators( $states, $types, true );
+  }
+
 }
 }
