@@ -53,6 +53,13 @@ if ( !class_exists('CSCore_Options') ) {
           'cf7-investigator-key',
         ),
       ),
+      'membership' => array(
+        'name' => 'Membership Premium',
+        'file' => '/options/membership.php',
+        'fields' => array(
+          'membership-subscription-level',
+        ),
+      ),
     );
 
     public $default_options = array(
@@ -60,6 +67,7 @@ if ( !class_exists('CSCore_Options') ) {
       'cf7-success-page-id' => "",
       'cf7-state-key' => "",
       'cf7-investigator-key' => "",
+      'membership-subscription-level' => "",
       'investigator-types' => array(),
       'states' => array(
         "Alabama",
@@ -211,7 +219,7 @@ if ( !class_exists('CSCore_Options') ) {
     public function create_options_menu() {
       add_options_page(
         'CaseSwap Core', // page title
-        'CaseSwap Options', // menu name
+        'CaseSwap Core', // menu name
         'edit_theme_options', // Capability Required
         $this->options_page_slug, // Slug
         array( &$this, "render_options_menu" ) // Displaying function
