@@ -2,6 +2,7 @@
 /**
  * Displays settings for the Contact Form 7 integration
  *
+ *
  * Fields managed:
  *   cf7-form-id
  *   cf7-success-page-id
