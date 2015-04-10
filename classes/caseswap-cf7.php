@@ -175,12 +175,12 @@ if ( !class_exists('CSCore_CF7') ) {
       if ( $emails ) {
         // Add the email string as the recipient for this contact form
         $properties['mail']['recipient'] = $emails;
-        $contact_form->set_properties( $properties );
       }else{
-        // We should not get here
-        wp_die('No investigators to send mail to');
-        exit;
+        // We should not get here! This email will go to the default recipient. Make the subject be an error message.
+        $properties['mail']['subject'] = 'CSCore Error #CF7_No_Investigators';
       }
+
+      $contact_form->set_properties( $properties );
 
       // Send the mail!
       return $contact_form;
