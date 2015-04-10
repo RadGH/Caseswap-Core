@@ -16,17 +16,17 @@ $options = $CSCore->Options->get_options();
 <table class="form-table caseswap-form-table">
   <tbody>
 
-  <!-- Textarea: Investigator Types -->
+  <!-- Textarea: Investigation Types -->
   <tr>
     <td style="width: 220px;">
       <strong><label for="cs_options_investigator-types">Investigation Types</label></strong>
-      <p class="description"><small>Investigators who sign up may select one or more Investigation Type. When an email is sent, it is sent to any active member who has selected that Investigator Type.</small></p>
+      <p class="description"><small>Investigators who sign up may select one or more Investigation Type. When an email is sent, it is sent to any active member who has selected that Investigatoion Type.</small></p>
     </td>
     <td>
       <textarea class="wide" name="cs_options[investigator-types]" id="cs_options_investigator-types" cols="80" rows="6"><?php
         echo esc_textarea( implode( "\n", $options['investigator-types'] ) );
         ?></textarea>
-      <p class="description">One investigator type per line.</p>
+      <p class="description">One investigation type per line.</p>
     </td>
   </tr>
 
