@@ -20,7 +20,7 @@ if ( !class_exists('CSCore_Users') ) {
       add_action( 'edit_user_profile', array( &$this, 'render_user_custom_fields' ), 3 );
 
       // Save custom fields from the above pages
-      add_action( 'edit_user_profile_update', array( &$this, 'save_user_custom_fields' ), 3 );
+      add_action( 'personal_options_update', array( &$this, 'save_user_custom_fields' ), 3 );
       add_action( 'edit_user_profile_update', array( &$this, 'save_user_custom_fields' ), 3 );
     }
 
