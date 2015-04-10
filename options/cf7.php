@@ -1,6 +1,6 @@
 <?php
 /**
- * Displays the main settings page for CaseSwap Core
+ * Displays settings for the Contact Form 7 integration
  *
  * Fields managed:
  *   cf7-form-id
