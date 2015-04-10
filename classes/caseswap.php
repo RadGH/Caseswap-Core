@@ -208,6 +208,8 @@ WHERE
   ( states.meta_value IN ( {$where_states} ) )
 	AND
 	( types.meta_value IN ( {$where_types} ) )
+	AND
+	( u.user_email != '' )
 
 GROUP BY u.ID
 
