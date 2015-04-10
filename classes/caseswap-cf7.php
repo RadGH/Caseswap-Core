@@ -19,7 +19,6 @@ if ( !class_exists('CSCore_CF7') ) {
 
     public $state = null;
     public $type = null;
-    public $recipients = null;
 
     public function __construct()
     {
@@ -92,16 +91,26 @@ if ( !class_exists('CSCore_CF7') ) {
     }
 
     public function validate_cf7( $result, $tags ) {
-      if ( !($result instanceof WPCF7_Validation) ) return $result; // Primarily to fix PHPStorm not knowing what type of object this is.
+      global $CSCore;
 
+      $contact_form = wpcf7_get_current_contact_form();
+      $options = $CSCore->Options->get_options();
+
+      // If a specific form is set, only check for fields in that form.
+      if ( (int) $contact_form->id() !== (int) $options['cf7-form-id'] ) {
+        return $result;
+      }
+
+      // Get the state/type which the user has provided
       $state = $this->get_state();
       $type = $this->get_investigator_type();
 
+      // If both of these are unset, they must be filling out the wrong form.
       if ( $state === null && $type === null ) {
         return $result;
       }
 
-      // Give an error if state or investigator type are not in the allowed options
+      // Validate that the fields provided are allowed in the options
       global $CSCore;
       $options = $CSCore->Options->get_options();
 
@@ -131,13 +140,14 @@ if ( !class_exists('CSCore_CF7') ) {
       if ( $allowed ) {
         $investigators = $CSCore->get_investigators( $state, $type );
 
-        if ( count($investigators) < 1 ) {
+        if ( empty($investigators) ) {
+          // No investigators found, give an error
           $index = null;
           foreach( $tags as $k => $v ) if ( $v['name'] == 'investigator_type' ) $index = $k;
 
           $result->invalidate( $tags[$index], "No investigators from " . esc_html($state) . " match this investigation type. Try something else." );
         }else{
-          $this->recipients = $investigators;
+          // Investigators are found, wait for send mail event
           add_filter( 'wpcf7_before_send_mail', array(&$this, 'catch_cf7') );
         }
       }
@@ -147,12 +157,6 @@ if ( !class_exists('CSCore_CF7') ) {
 
 
     public function catch_cf7( $contact_form ) {
-      /*
-      do_action( 'wpcf7_before_send_mail', $contact_form );
-
-      $skip_mail = $this->skip_mail || ! empty( $contact_form->skip_mail );
-      $skip_mail = apply_filters( 'wpcf7_skip_mail', $skip_mail, $contact_form );)
-      */
       $state = $this->get_state();
       $type = $this->get_investigator_type();
 
@@ -161,24 +165,62 @@ if ( !class_exists('CSCore_CF7') ) {
         return $contact_form;
       }
 
-      die('send to these guys: ' . print_r($this->recipients, false));
+      global $CSCore;
+      $user_ids = $CSCore->get_investigators( $state, $type );
 
-      /*
-      $submission = WPCF7_Submission::get_instance();
-      $submission->status = 'validation_failed';
-      $submission->response = 'hurr durr';
+      $properties = $contact_form->get_properties();
+
+      $emails = $this->user_ids_to_email_string( $user_ids );
+
+      if ( $emails ) {
+        // Add the email string as the recipient for this contact form
+        $properties['mail']['recipient'] = $emails;
+        $contact_form->set_properties( $properties );
+      }else{
+        // We should not get here
+        wp_die('No investigators to send mail to');
+        exit;
+      }
+
+      // Send the mail!
       return $contact_form;
-      var_dump($submission);
-      exit;
+    }
 
-      var_dump($state);
-      var_dump($type);
 
-      $contact_form->skip_mail = true;
-      $contact_form->status = 'validation_failed';
-      $contact_form->response = 'hurr durr';
-      return $contact_form;
-      */
+    public function user_ids_to_email_string( $user_ids ) {
+      global $wpdb;
+
+      // Convert an array of user IDs to a mysql-friendly list
+      $uids = array();
+      foreach( $user_ids as $id ) {
+        if ( absint($id) > 0 ) $uids[] = absint($id); // esc_sql isn't necessary
+      }
+      $user_id_list = implode(", ", $uids); // 42, 43, 45
+      if ( empty($user_id_list) ) return false;
+
+      // Sql query to get the email address of every user ID.
+      // Note: Relationship between ID and email address is not preserved.
+      $sql = "
+SELECT u.user_email
+FROM {$wpdb->users} u
+WHERE u.ID IN ( {$user_id_list} )
+LIMIT 2000;
+";
+
+      $email_array = $wpdb->get_col( $sql );
+      if ( empty($email_array) ) return false;
+
+      // Sanitize all email addresses
+      $sanitized_emails = array();
+
+      foreach( $email_array as $e ) {
+        $san = sanitize_email( $e );
+        if ( $san ) $sanitized_emails[] = $san;
+      }
+
+      if ( empty($sanitized_emails) ) return false;
+
+      return implode(", ", $sanitized_emails);
     }
 
   }
