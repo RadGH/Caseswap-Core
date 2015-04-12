@@ -63,11 +63,30 @@ if ( !class_exists('CSCore_Options') ) {
     );
 
     public $default_options = array(
-      'cf7-form-id' => "",
-      'cf7-success-page-id' => "",
-      'cf7-state-key' => "",
+      // SMTP
+      'mail_from_email'  => "",          // Global default email, which replaces Wordpress@example.org
+      'mail_from_name'   => "",          // Global default name, which replaces the name "WordPress" as the sender
+      'mail_reply_to'    => "",          // If set, a Reply-To header is set which will reply to another email, different than the From address
+      'mail_return_path' => "",          // If set, the Return-Path can be changed. Otherwise the From address will be used.
+
+      'smtp_enabled'     => "",          // Boolean: If not empty, SMTP will be used
+      'smtp_user'        => "",          // SMTP user credentials
+      'smtp_pass'        => "",          // SMTP user credentials
+      'smtp_host'        => "localhost", // String: Hostname of SMTP server
+      'smtp_port'        => "25",        // Number: Port used for SMTP server
+      'smtp_ssl'         => "none",      // String: none, ssl, tls
+      'smtp_auth'        => "",          // Boolean: If not empty, authentication is required
+
+      // Contact Form 7
+      'cf7-form-id'          => "",      // ID of the contact form (post object) used for "Submit Your Case"
+      'cf7-success-page-id'  => "",      // Page to redirect to when user fills out contact form
+      'cf7-state-key'        => "",
       'cf7-investigator-key' => "",
+
+      // Membership Premium
       'membership-subscription-level' => "",
+
+      // General Settings
       'investigator-types' => array(),
       'states' => array(
         "Alabama",
