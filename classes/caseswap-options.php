@@ -66,7 +66,6 @@ if ( !class_exists('CSCore_Options') ) {
       // SMTP
       'mail_from_email'  => "",          // Global default email, which replaces Wordpress@example.org
       'mail_from_name'   => "",          // Global default name, which replaces the name "WordPress" as the sender
-      'mail_reply_to'    => "",          // If set, a Reply-To header is set which will reply to another email, different than the From address
       'mail_return_path' => "",          // If set, the Return-Path can be changed. Otherwise the From address will be used.
 
       'smtp_enabled'     => "",          // Boolean: If not empty, SMTP will be used
@@ -84,10 +83,10 @@ if ( !class_exists('CSCore_Options') ) {
       'cf7-investigator-key' => "",
 
       // Membership Premium
-      'membership-subscription-level' => "",
+      'membership-subscription-level' => "", // ID of subscription level required to receive submitted cases
 
       // General Settings
-      'investigator-types' => array(),
+      'investigator-types' => array(), // Array of strings (submitted as line-separated string)
       'states' => array(
         "Alabama",
         "Alaska",
