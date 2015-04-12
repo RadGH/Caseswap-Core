@@ -142,6 +142,9 @@ if ( !class_exists('CSCore_Options') ) {
 
       add_action( 'admin_menu', array(&$this, 'save_options_menu'), 8 );
       add_action( 'admin_menu', array(&$this, 'create_options_menu'), 10 );
+
+      // Adds "Settings" link to the custon settings page
+      add_filter( 'plugin_action_links', array(&$this, 'plugin_settings_link'), 10, 2);
     }
 
 
@@ -305,6 +308,22 @@ if ( !class_exists('CSCore_Options') ) {
 
       wp_redirect( add_query_arg( array('cs_page' => $section, 'cs_message' => 'options-saved'), $this->options_page_url) );
       exit;
+    }
+
+    /**
+     * Adds a "Settings" link to the plugin page, pointing to our custom options page
+     *
+     * @param $links
+     * @param $file
+     */
+    public function plugin_settings_link( $links, $file ) {
+      if ( $file != "caseswap-core/caseswap-core.php" ) return $links;
+
+      $settings_link = '<a href="'. esc_attr(admin_url('options-general.php?page=caseswap-options')) .'">Settings</a>';
+
+      array_unshift( $links, $settings_link );
+
+      return $links;
     }
   }
 }
