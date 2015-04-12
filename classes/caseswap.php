@@ -73,6 +73,9 @@ class CSCore {
     require_once(CSCore_PATH . '/classes/caseswap-options.php');
     $this->Options = new CSCore_Options();
 
+    require_once(CSCore_PATH . '/classes/caseswap-smtp.php');
+    $this->SMTP = new CSCore_SMTP();
+
     require_once(CSCore_PATH . '/classes/caseswap-users.php');
     $this->Users = new CSCore_Users();
 
