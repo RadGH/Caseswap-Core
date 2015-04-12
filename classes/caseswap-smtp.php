@@ -2,7 +2,7 @@
 if ( !defined('ABSPATH') ) exit; // Do not run directly.
 
 /**
- * Allows wp_mail() to use an SMTP account to send email instead of regular PHP mail()
+ * Allows wp_mail() to use an SMTP account to send email instead of regular PHP mail(). Based on WP Mail SMTP by Callum Macdonald.
  *
  * Options configured by $CSCore->Options
  *
