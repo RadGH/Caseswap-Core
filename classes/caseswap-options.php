@@ -36,7 +36,7 @@ if ( !class_exists('CSCore_Options') ) {
         ),
       ),
       'email' => array(
-        'name' => 'Email Settings',
+        'name' => 'Email',
         'file' => '/options/email.php',
         'fields' => array(
           'mail_from_email',
