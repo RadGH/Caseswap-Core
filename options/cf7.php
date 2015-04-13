@@ -66,6 +66,8 @@ $all_contact_forms = get_posts($args);
         </ul>
 
         <p class="description">* These fields will have values added automatically using the values from the Settings page.</p>
+
+        <p>The contact form's email template will be replaced by the <a href="<?php echo esc_attr( admin_url( 'options-general.php?page=caseswap-options&cs_page=new-case-template') ); ?>">New Case Template</a>.</p>
       </div>
     </td>
   </tr>
