@@ -35,6 +35,22 @@ if ( !class_exists('CSCore_Options') ) {
           'states',
         ),
       ),
+      'email' => array(
+        'name' => 'Email Settings',
+        'file' => '/options/email.php',
+        'fields' => array(
+          'mail_from_email',
+          'mail_from_name',
+          'mail_return_path',
+          'smtp_enabled',
+          'smtp_user',
+          'smtp_pass',
+          'smtp_host',
+          'smtp_port',
+          'smtp_ssl',
+          'smtp_auth',
+        ),
+      ),
       /*
       'content' => array(
         'name' => 'Content',
@@ -324,7 +340,9 @@ if ( !class_exists('CSCore_Options') ) {
       // Save the updated options
       update_option( 'caseswap-options', $options );
 
-      wp_redirect( add_query_arg( array('cs_page' => $section, 'cs_message' => 'options-saved'), $this->options_page_url) );
+      $args = apply_filters( 'caseswap-options-saved-redirect-args', array('cs_page' => $section, 'cs_message' => 'options-saved'), $this );
+
+      wp_redirect( add_query_arg( $args, $this->options_page_url) );
       exit;
     }
 
