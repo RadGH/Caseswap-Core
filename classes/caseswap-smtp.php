@@ -17,7 +17,6 @@ if ( !class_exists('CSCore_SMTP') ) {
     public $mail_settings = array (
       'mail_from_email'  => null,
       'mail_from_name'   => null,
-      'mail_mailer'      => null,
       'mail_return_path' => null,
 
       'smtp_enabled'     => null,
@@ -34,9 +33,19 @@ if ( !class_exists('CSCore_SMTP') ) {
      */
     public function __construct() {
       // Replace the default from name/email with our options, if set
-      add_filter('wp_mail_from', array( &$this, 'mail_default_from_email') );
-      add_filter('wp_mail_from_name', array( &$this, 'mail_default_from_name') );
-      add_action('phpmailer_init', array( &$this, 'phpmailer_init') );
+      add_filter( 'wp_mail_from', array( &$this, 'mail_default_from_email') );
+      add_filter( 'wp_mail_from_name', array( &$this, 'mail_default_from_name') );
+      add_action( 'phpmailer_init', array( &$this, 'phpmailer_init') );
+
+      add_filter( 'caseswap-options-saved-redirect-args', array( &$this, 'options_saved_test_email') );
+    }
+
+    public function options_saved_test_email( $args ) {
+      if ( isset($_REQUEST['cs_test_recipient']) && $_REQUEST['cs_test_recipient'] ) {
+        $args['cs_test_recipient'] = urlencode(stripslashes($_REQUEST['cs_test_recipient']));
+      }
+
+      return $args;
     }
 
     public function setting( $key ) {
@@ -85,18 +94,26 @@ if ( !class_exists('CSCore_SMTP') ) {
     }
 
     public function phpmailer_init( $phpmailer ) {
-      // Set the Sender (return-path) if opted
-      if ( $this->setting('mail_return_path') ) {
-        $phpmailer->Sender = $this->setting('mail_return_path');
-      }else{
-        // Fall back to use the From address
-        $phpmailer->Sender = $phpmailer->From;
+
+      $phpmailer->SMTPDebug = 1;
+
+      // Set the mailer type as per config above, this overrides the already called isMail method
+      if ( $this->setting('smtp_enabled') != '' ) {
+        $phpmailer->Mailer = 'smtp';
+      }
+
+      // Set the Sender (return-path) if not already provided
+      if ( !isset($phpmailer->Sender) || !$phpmailer->Sender ) {
+        if ( $this->setting('mail_return_path') && is_email( $this->setting('mail_return_path') ) ) {
+          $phpmailer->Sender = $this->setting('mail_return_path');
+        }else{
+          // Fall back to use the From address
+          $phpmailer->Sender = $phpmailer->From;
+        }
       }
 
       // If we're sending via SMTP, set the host
-      if ( $this->setting('smtp_enabled') == 'smtp' ) {
-        // Set the mailer type as per config above, this overrides the already called isMail method
-        $phpmailer->Mailer = 'smtp';
+      if ( $this->setting('smtp_enabled') != '' ) {
 
         // Set the SMTPSecure value, if set to none, leave this blank
         $phpmailer->SMTPSecure = in_array($this->setting('smtp_ssl'), array('tls', 'ssl')) ? $this->setting('smtp_ssl') : 'none';
@@ -108,10 +125,15 @@ if ( !class_exists('CSCore_SMTP') ) {
         // If we're using smtp auth, set the username & password
         if ( $this->setting('smtp_auth') != '' ) {
           $phpmailer->SMTPAuth = TRUE;
+          $phpmailer->AuthType = 'basic';
           $phpmailer->Username = $this->setting('smtp_user');
           $phpmailer->Password = $this->setting('smtp_pass');
         }
       }
+
+      echo '<pre>';
+      var_dump($phpmailer);
+      echo '</pre>';
 
     }
 
