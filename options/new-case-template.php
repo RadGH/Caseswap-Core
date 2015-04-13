@@ -52,8 +52,6 @@ $send_url = add_query_arg(array( 'cs_template' => 'mail_template_new_case', 'cs_
 
       <h3>Template Tags:</h3>
 
-      <h4>Visitor's Submitted Information:</h4>
-
       <table class="tag-table">
         <tr>
           <td class="tag-code">[name]</td>
@@ -81,12 +79,25 @@ $send_url = add_query_arg(array( 'cs_template' => 'mail_template_new_case', 'cs_
         </tr>
       </table>
 
+      <?php /*
+      TEMPORARILY DISABLED
+      We need to move templating to a separate system, other than COntact Form 7, to use this.
+      Contact Form 7 will send an email to all investigators in one go, so these don't work.
+
       <h4>Investigator's Information:</h4>
 
       <table class="tag-table">
         <tr>
-          <td class="tag-code">[investigator_name]</td>
-          <td class="tag-desc">Investigator's Name</td>
+          <td class="tag-code">[investigator_first_name]</td>
+          <td class="tag-desc">Investigator's First Name</td>
+        </tr>
+        <tr>
+          <td class="tag-code">[investigator_last_name]</td>
+          <td class="tag-desc">Investigator's Last Name</td>
+        </tr>
+        <tr>
+          <td class="tag-code">[investigator_login]</td>
+          <td class="tag-desc">Investigator's Login/Username</td>
         </tr>
         <tr>
           <td class="tag-code">[investigator_email]</td>
@@ -97,6 +108,8 @@ $send_url = add_query_arg(array( 'cs_template' => 'mail_template_new_case', 'cs_
           <td class="tag-desc">Investigator's User ID</td>
         </tr>
       </table>
+      */
+      ?>
 
     </td>
   </tr>

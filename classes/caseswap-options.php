@@ -191,42 +191,6 @@ if ( !class_exists('CSCore_Options') ) {
 
       // Adds "Settings" link to the custon settings page
       add_filter( 'plugin_action_links', array(&$this, 'plugin_settings_link'), 10, 2);
-
-      // Displays an email template in the browser, or sends to email, depending on action
-      add_action( 'admin_init', array(&$this, 'preview_email') );
-    }
-
-    public function preview_email() {
-      if ( !isset($_REQUEST['cs_preview_nonce']) ) return;
-      $nonce = $_REQUEST['cs_preview_nonce'];
-
-      $options = $this->get_options();
-
-      $template = $options['mail_template_new_case'];
-
-      if ( $options['mail_template_new_case_autop'] != '' ) {
-        $template = wpautop($template);
-      }
-
-      if ( wp_verify_nonce( $nonce, 'preview-email-display') ) {
-        echo $template;
-        exit;
-      }
-      if ( wp_verify_nonce( $nonce, 'preview-email-send') ) {
-        $user = wp_get_current_user();
-        $sent = wp_mail( $user->get('user_email'), '[Test] New Case Template', $template, 'Content-Type: text/html; charset=UTF-8' );
-
-        $back_url = admin_url('options-general.php?page=caseswap-options&cs_page=new-case-template');
-
-        if ( $sent ) {
-          wp_die('<h2>Test Email Sent</h2><p>The email template was sent successfully to <code>'. esc_html($user->get('user_email')) .'</code>.</p><p><a href="'. esc_attr($back_url) .'" onclick="window.close();">&laquo; Go Back</a></p>');
-          exit;
-        }else{
-          wp_die('<h2>Test Email Failed</h2><p>Sorry, we failed to send the email template to <code>'. esc_html($user->get('user_email')) .'</code>.</p><p><a href="'. esc_attr($back_url) .'" onclick="window.close();">&laquo; Go Back</a></p>');
-          exit;
-        }
-
-      }
     }
 
 

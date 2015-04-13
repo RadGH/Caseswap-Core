@@ -17,8 +17,7 @@ if ( !class_exists('CSCore_CF7') ) {
 
     public $cached_options = false;
 
-    public $state = null;
-    public $type = null;
+    public $fields = array();
 
     public function __construct()
     {
@@ -27,6 +26,31 @@ if ( !class_exists('CSCore_CF7') ) {
       add_filter('wpcf7_form_tag', array(&$this, 'format_tag'), 10, 2);
 
       add_filter( 'wpcf7_validate', array( &$this, 'validate_cf7' ), 10, 2 );
+
+      add_action( 'admin_print_footer_scripts', array( &$this, 'cf7_warn_template_override' ), 20 );
+    }
+
+    public function cf7_warn_template_override() {
+      $screen = get_current_screen();
+
+      if ( $screen->base == 'toplevel_page_wpcf7' ) {
+        global $CSCore;
+
+        $options = $CSCore->Options->get_options();
+        $form_id = $options['cf7-form-id'];
+
+        if ( !empty($_REQUEST['post']) && $_REQUEST['post'] == $form_id ) {
+          $url = admin_url('options-general.php?page=caseswap-options&cs_page=new-case-template');
+          ?>
+<script type="text/javascript">
+  jQuery('#wpcf7-mail-body')
+    .before( "<p><strong>Warning: This email template is managed by CaseSwap Core. <a href=\"<?php echo esc_attr($url); ?>\" target=\"_blank\">Click here</a> to edit this template." )
+    .css('opacity', '0.5')
+    .css('cursor', 'not-allowed');
+</script>
+          <?php
+        }
+      }
     }
 
     public function format_tag( $tag, $exec ) {
@@ -74,20 +98,12 @@ if ( !class_exists('CSCore_CF7') ) {
       return $tag;
     }
 
-    public function get_state() {
-      if ( $this->state === null ) {
-        $this->state = isset($_REQUEST['state']) ? (string) stripslashes($_REQUEST['state']) : null;
+    public function get_cf7_field( $key ) {
+      if ( !isset($this->fields[$key]) ) {
+        $this->fields[$key] = isset($_REQUEST[$key]) ? (string) stripslashes($_REQUEST[$key]) : null;
       }
 
-      return $this->state;
-    }
-
-    public function get_investigator_type() {
-      if ( $this->type === null ) {
-        $this->type = isset($_REQUEST['type']) ? (string) stripslashes($_REQUEST['type']) : null;
-      }
-
-      return $this->type;
+      return $this->fields[$key];
     }
 
     public function validate_cf7( $result, $tags ) {
@@ -102,8 +118,8 @@ if ( !class_exists('CSCore_CF7') ) {
       }
 
       // Get the state/type which the user has provided
-      $state = $this->get_state();
-      $type = $this->get_investigator_type();
+      $state = $this->get_cf7_field('state');
+      $type = $this->get_cf7_field('type');
 
       // If both of these are unset, they must be filling out the wrong form.
       if ( $state === null && $type === null ) {
@@ -157,8 +173,8 @@ if ( !class_exists('CSCore_CF7') ) {
 
 
     public function catch_cf7( $contact_form ) {
-      $state = $this->get_state();
-      $type = $this->get_investigator_type();
+      $state = $this->get_cf7_field('state');
+      $type = $this->get_cf7_field('type');
 
       if ( $state === null && $type === null ) {
         // State and type not specified, do not intercept this message.
@@ -178,6 +194,28 @@ if ( !class_exists('CSCore_CF7') ) {
       }else{
         // We should not get here! This email will go to the default recipient. Make the subject be an error message.
         $properties['mail']['subject'] = 'CSCore Error #CF7_No_Investigators';
+      }
+
+      // Replace the contact form 7 email template with a custom one
+      $name = $this->get_cf7_field('name');
+      $email = $this->get_cf7_field('email');
+      $message = $this->get_cf7_field('message');
+      $contact_method = $this->get_cf7_field('contact_method');
+
+      $tags = array(
+//        Already provided:
+//        '[name]'           => esc_html( $name ),
+//        '[email]'          => esc_html( $email ),
+//        '[type]'           => esc_html( $type ),
+//        '[state]'          => esc_html( $state ),
+//        '[message]'        => nl2br( esc_html($message) ),
+//        '[contact_method]' => esc_html($contact_method),
+      );
+
+      $template = $CSCore->Email->get_email_template( 'mail_template_new_case', $tags );
+
+      if ( $template ) {
+        $properties['mail']['body'] = $template;
       }
 
       $contact_form->set_properties( $properties );

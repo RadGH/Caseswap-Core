@@ -5,7 +5,7 @@ table.caseswap-form-table tr td {
 
 
 .caseswap-form-table.codemirror-table {
-  max-width: 1380px;
+  max-width: 1440px;
   table-layout: fixed;
 }
 .caseswap-form-table.codemirror-table + p.submit,
@@ -14,7 +14,7 @@ table.caseswap-form-table tr td {
 }
 
 .caseswap-form-table td.caseswap-template-controls {
-  width: 300px;
+  width: 360px;
 }
 .caseswap-form-table td.caseswap-template-controls p.submit {
   margin: 10px 0 20px;
@@ -37,14 +37,13 @@ table.caseswap-form-table tr td {
 .CodeMirror {
   max-width: 1040px;
   height: 60vh;
-  resize: both;
 }
 
 
 
 
 table.tag-table {
-  width: 300px;
+  width: 360px;
   table-layout: fixed;
 }
 table.tag-table td {
@@ -54,7 +53,7 @@ table.tag-table td {
   vertical-align: top;
 }
 table.tag-table td.tag-code {
-  width: 120px;
+  width: 140px;
   padding-left: 0;
 }
 table.tag-table td.tag-desc {
