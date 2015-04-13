@@ -73,8 +73,8 @@ class CSCore {
     require_once(CSCore_PATH . '/classes/caseswap-options.php');
     $this->Options = new CSCore_Options();
 
-    require_once(CSCore_PATH . '/classes/caseswap-smtp.php');
-    $this->SMTP = new CSCore_SMTP();
+    require_once(CSCore_PATH . '/classes/caseswap-email.php');
+    $this->Email = new CSCore_Email();
 
     require_once(CSCore_PATH . '/classes/caseswap-users.php');
     $this->Users = new CSCore_Users();
@@ -97,6 +97,10 @@ class CSCore {
    * Adds our plugin JavaScript and Stylesheet to the admin
    */
   public function enqueue_admin_scripts() {
+    // CodeMirror - Syntax highlighting for textareas (Used on email template options pages)
+    wp_enqueue_script( "codemirror", CSCore_URL . '/includes/codemirror.js', array(), '5.1' );
+    wp_enqueue_style( "codemirror", CSCore_URL . '/includes/codemirror.css', false, '5.1' );
+
     wp_enqueue_script( "caseswap_admin", CSCore_URL . '/includes/cs_admin.js', array( 'jquery' ), CSCore_VERSION );
     wp_enqueue_style( "caseswap_admin", CSCore_URL . '/includes/cs_admin.css', false, CSCore_VERSION );
   }

@@ -1,3 +1,63 @@
 table.caseswap-form-table tr td {
   vertical-align: top;
 }
+
+
+
+.caseswap-form-table.codemirror-table {
+  max-width: 1380px;
+  table-layout: fixed;
+}
+.caseswap-form-table.codemirror-table + p.submit,
+.caseswap-form-table.codemirror-table + script + p.submit {
+  display: none;
+}
+
+.caseswap-form-table td.caseswap-template-controls {
+  width: 300px;
+}
+.caseswap-form-table td.caseswap-template-controls p.submit {
+  margin: 10px 0 20px;
+  padding: 0;
+}
+.caseswap-form-table td.caseswap-template-controls h3 {
+  margin: 20px 0 10px;
+}
+.caseswap-form-table td.caseswap-template-controls > h3:first-child {
+  margin-top: 0;
+}
+.caseswap-form-table td.caseswap-template-controls h4 {
+  margin: 20px 0 10px;
+}
+
+
+#template_textarea {
+  width: 100%;
+}
+.CodeMirror {
+  max-width: 1040px;
+  height: 60vh;
+  resize: both;
+}
+
+
+
+
+table.tag-table {
+  width: 300px;
+  table-layout: fixed;
+}
+table.tag-table td {
+  padding: 2px 6px;
+  font-size: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+table.tag-table td.tag-code {
+  width: 120px;
+  padding-left: 0;
+}
+table.tag-table td.tag-desc {
+  padding-right: 0;
+  color: #888;
+}

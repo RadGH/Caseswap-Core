@@ -7,12 +7,12 @@ if ( !defined('ABSPATH') ) exit; // Do not run directly.
  * Options configured by $CSCore->Options
  *
  * @since 4.1.1
- * @global $CSCore->SMTP
+ * @global $CSCore->Email
  * @param none
  */
 
-if ( !class_exists('CSCore_SMTP') ) {
-  class CSCore_SMTP {
+if ( !class_exists('CSCore_Email') ) {
+  class CSCore_Email {
 
     public $mail_settings = array (
       'mail_from_email'  => null,
@@ -130,10 +130,6 @@ if ( !class_exists('CSCore_SMTP') ) {
           $phpmailer->Password = $this->setting('smtp_pass');
         }
       }
-
-      echo '<pre>';
-      var_dump($phpmailer);
-      echo '</pre>';
 
     }
 

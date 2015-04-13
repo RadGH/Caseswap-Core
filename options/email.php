@@ -20,8 +20,8 @@ global $CSCore;
 
 $options = $CSCore->Options->get_options();
 
-$SMTP = $CSCore->SMTP;
-if ( !$SMTP instanceof CSCore_SMTP ) return; // Smarten up my IDE
+$Email = $CSCore->Email;
+if ( !$Email instanceof CSCore_Email ) return; // Smarten up my IDE
 
 
 // ## COPIED FROM pluggable.php:349-354 (rev 10150)
@@ -47,7 +47,7 @@ $default_email = 'wordpress@' . $sitename;
       <strong><label for="cs_options_mail_from_email">From Email</label></strong>
     </td>
     <td>
-      <input class="regular-text" type="email" name="cs_options[mail_from_email]" id="cs_options_mail_from_email" value="<?php echo esc_attr($SMTP->setting('mail_from_email')); ?>" />
+      <input class="regular-text" type="email" name="cs_options[mail_from_email]" id="cs_options_mail_from_email" value="<?php echo esc_attr($Email->setting('mail_from_email')); ?>" />
       <span class="description">Default: <code><?php echo esc_html($default_email); ?></code></span>
     </td>
   </tr>
@@ -58,7 +58,7 @@ $default_email = 'wordpress@' . $sitename;
       <strong><label for="cs_options_mail_from_name">From Name</label></strong>
     </td>
     <td>
-      <input class="regular-text" type="text" name="cs_options[mail_from_name]" id="cs_options_mail_from_name" value="<?php echo esc_attr($SMTP->setting('mail_from_name')); ?>" />
+      <input class="regular-text" type="text" name="cs_options[mail_from_name]" id="cs_options_mail_from_name" value="<?php echo esc_attr($Email->setting('mail_from_name')); ?>" />
       <span class="description">Default: <code>WordPress</code></span>
     </td>
   </tr>
@@ -69,7 +69,7 @@ $default_email = 'wordpress@' . $sitename;
       <strong><label for="cs_options_mail_return_path">Return Path</label></strong>
     </td>
     <td>
-      <input class="regular-text" type="email" name="cs_options[mail_return_path]" id="cs_options_mail_return_path" value="<?php echo esc_attr($SMTP->setting('mail_return_path')); ?>" />
+      <input class="regular-text" type="email" name="cs_options[mail_return_path]" id="cs_options_mail_return_path" value="<?php echo esc_attr($Email->setting('mail_return_path')); ?>" />
       <span class="description">Default: <code>None</code></span>
 
       <p class="description">Any bounced emails will be sent to this email address, unless a return path has already been specified elsewhere.</p>
@@ -94,7 +94,7 @@ $default_email = 'wordpress@' . $sitename;
     </td>
     <td>
       <label for="cs_options_smtp_enabled">
-        <input type="checkbox" name="cs_options[smtp_enabled]" id="cs_options_smtp_enabled" <?php checked($SMTP->setting('smtp_enabled') != "", true); ?> />
+        <input type="checkbox" name="cs_options[smtp_enabled]" id="cs_options_smtp_enabled" <?php checked($Email->setting('smtp_enabled') != "", true); ?> />
         Enable SMTP for all email
       </label>
     </td>
@@ -114,7 +114,7 @@ $default_email = 'wordpress@' . $sitename;
         <strong><label for="cs_options_smtp_host">SMTP Host</label></strong>
       </td>
       <td>
-        <input class="regular-text" type="text" name="cs_options[smtp_host]" id="cs_options_smtp_host" value="<?php echo esc_attr($SMTP->setting('smtp_host')); ?>" />
+        <input class="regular-text" type="text" name="cs_options[smtp_host]" id="cs_options_smtp_host" value="<?php echo esc_attr($Email->setting('smtp_host')); ?>" />
         <span class="description">Default: <code>localhost</code></span>
       </td>
     </tr>
@@ -125,7 +125,7 @@ $default_email = 'wordpress@' . $sitename;
         <strong><label for="cs_options_smtp_port">SMTP Port</label></strong>
       </td>
       <td>
-        <input class="small-text" type="number" name="cs_options[smtp_port]" id="cs_options_smtp_port" value="<?php echo esc_attr($SMTP->setting('smtp_port')); ?>" />
+        <input class="small-text" type="number" name="cs_options[smtp_port]" id="cs_options_smtp_port" value="<?php echo esc_attr($Email->setting('smtp_port')); ?>" />
         <span class="description">Default: <code>25</code></span>
       </td>
     </tr>
@@ -148,7 +148,7 @@ $default_email = 'wordpress@' . $sitename;
             echo sprintf(
               '<option value="%s" %s>%s</option>',
               esc_attr( $value ),
-              selected( $value, $SMTP->setting('smtp_ssl'), false ),
+              selected( $value, $Email->setting('smtp_ssl'), false ),
               esc_html( $label )
             );
           }
@@ -165,7 +165,7 @@ $default_email = 'wordpress@' . $sitename;
       </td>
       <td>
         <label for="cs_options_smtp_auth">
-          <input type="checkbox" name="cs_options[smtp_auth]" id="cs_options_smtp_auth" <?php checked($SMTP->setting('smtp_auth') != "", true); ?> />
+          <input type="checkbox" name="cs_options[smtp_auth]" id="cs_options_smtp_auth" <?php checked($Email->setting('smtp_auth') != "", true); ?> />
           Use SMTP user authentication
         </label>
       </td>
@@ -185,7 +185,7 @@ $default_email = 'wordpress@' . $sitename;
           <strong><label for="cs_options_smtp_user">Username</label></strong>
         </td>
         <td>
-          <input class="regular-text" type="text" name="cs_options[smtp_user]" id="cs_options_smtp_user" value="<?php echo esc_attr($SMTP->setting('smtp_user')); ?>" />
+          <input class="regular-text" type="text" name="cs_options[smtp_user]" id="cs_options_smtp_user" value="<?php echo esc_attr($Email->setting('smtp_user')); ?>" />
           <span class="description">This is often the <strong>full</strong> email address.</span>
         </td>
       </tr>
@@ -196,7 +196,7 @@ $default_email = 'wordpress@' . $sitename;
           <strong><label for="cs_options_smtp_pass">Password</label></strong>
         </td>
         <td>
-          <input class="regular-text" type="password" name="cs_options[smtp_pass]" id="cs_options_smtp_pass" value="<?php echo esc_attr($SMTP->setting('smtp_pass')); ?>" />
+          <input class="regular-text" type="password" name="cs_options[smtp_pass]" id="cs_options_smtp_pass" value="<?php echo esc_attr($Email->setting('smtp_pass')); ?>" />
         </td>
       </tr>
       
@@ -219,6 +219,8 @@ if ( isset($_REQUEST['cs_test_recipient']) ) {
     $subject = '[' . get_bloginfo('name') . '] Test email';
     $message = '<p>This is a test email sent from <a href="'. esc_attr(get_bloginfo('url')) .'" target="_blank">'. esc_html(get_bloginfo('name')) .'</a>.</p>';
     $header = 'Content-Type: text/html; charset=UTF-8';
+
+    $message = $options['mail_template_new_case'];
 
     $sent = wp_mail( $email, $subject, $message, $header );
 

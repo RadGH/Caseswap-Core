@@ -59,7 +59,7 @@ $all_contact_forms = get_posts($args);
         <ul class="ul-disc">
           <li><code>name</code> (Text)</li>
           <li><code>email</code> (Text)</li>
-          <li><code>investigator_type</code> (* Dropdown)</li>
+          <li><code>type</code> (* Dropdown)</li>
           <li><code>state</code> (* Dropdown)</li>
           <li><code>message</code> (Textarea)</li>
           <li><code>contact_method</code> (Text)</li>

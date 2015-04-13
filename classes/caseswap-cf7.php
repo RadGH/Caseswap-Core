@@ -41,9 +41,9 @@ if ( !class_exists('CSCore_CF7') ) {
            $this->cached_options = $CSCore->Options->get_options();
          }
 
-         // If the tag name is investigator_type or state, replace values
+         // If the tag name is type or state, replace values
          switch( $tag['name'] ) {
-           case 'investigator_type':
+           case 'type':
              $values = $this->cached_options['investigator-types'];
              break;
 
@@ -84,7 +84,7 @@ if ( !class_exists('CSCore_CF7') ) {
 
     public function get_investigator_type() {
       if ( $this->type === null ) {
-        $this->type = isset($_REQUEST['investigator_type']) ? (string) stripslashes($_REQUEST['investigator_type']) : null;
+        $this->type = isset($_REQUEST['type']) ? (string) stripslashes($_REQUEST['type']) : null;
       }
 
       return $this->type;
@@ -130,7 +130,7 @@ if ( !class_exists('CSCore_CF7') ) {
       // Check if type is allowed
       if ( !in_array( $type, $all_types ) ) {
         $index = null;
-        foreach( $tags as $k => $v ) if ( $v['name'] == 'investigator_type' ) $index = $k;
+        foreach( $tags as $k => $v ) if ( $v['name'] == 'type' ) $index = $k;
 
         $result->invalidate( $tags[$index], 'That type of investigation is not currently supported.' );
         $allowed = false;
@@ -143,7 +143,7 @@ if ( !class_exists('CSCore_CF7') ) {
         if ( empty($investigators) ) {
           // No investigators found, give an error
           $index = null;
-          foreach( $tags as $k => $v ) if ( $v['name'] == 'investigator_type' ) $index = $k;
+          foreach( $tags as $k => $v ) if ( $v['name'] == 'type' ) $index = $k;
 
           $result->invalidate( $tags[$index], "No investigators from " . esc_html($state) . " match this investigation type. Try something else." );
         }else{
