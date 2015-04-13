@@ -36,7 +36,7 @@ $default_email = 'wordpress@' . $sitename;
 ?>
 <h3>Email Defaults</h3>
 
-<p>These settings can replace the default email settings, but are not used if a different option has been provided. These settings affect all emails sent by WordPress and any plugin.</p>
+<p>These settings can replace the default WordPress email settings and affect all email sent by WordPress.</p>
 
 <table class="form-table caseswap-form-table">
   <tbody>
@@ -70,7 +70,7 @@ $default_email = 'wordpress@' . $sitename;
     </td>
     <td>
       <input class="regular-text" type="email" name="cs_options[mail_return_path]" id="cs_options_mail_return_path" value="<?php echo esc_attr($SMTP->setting('mail_return_path')); ?>" />
-      <span class="description">Default: <code>("From email")</code></span>
+      <span class="description">Default: <code>None</code></span>
 
       <p class="description">Any bounced emails will be sent to this email address, unless a return path has already been specified elsewhere.</p>
     </td>
