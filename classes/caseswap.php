@@ -35,11 +35,8 @@ class CSCore {
    * @since 4.1.1
    */
   public function __construct() {
-
     add_action( 'plugins_loaded', array( &$this, 'plugins_loaded' ) );
-
     add_action( 'init', array( &$this, 'init_general' ) );
-
     add_action( 'admin_enqueue_scripts', array( &$this, 'enqueue_admin_scripts' ) );
     add_action( 'wp_enqueue_scripts', array( &$this, 'enqueue_theme_scripts' ) );
   }
