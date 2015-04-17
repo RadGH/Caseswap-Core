@@ -19,10 +19,12 @@ class CSCore {
    */
 
   // Objects.
-  public $Options = false; // Core module - Manages the options menus in the backend
-  public $Users = false; // Core module - Adds and manages custom fields for investigator's user profiles
+  public $Cases = false;      // Core module - Manages a custom post type named "case", which are cases submitted by visitors and are sent to investigators
+  public $Email = false;      // Core module - Customize email defaults and specify SMTP server settings
+  public $Options = false;    // Core module - Manages the options menus in the backend
+  public $Users = false;      // Core module - Adds and manages custom fields for investigator's user profiles
   public $Membership = false; // Plugin module - Memberships Premium (by WPMUDev)
-  public $CF7 = false; // Plugin module - Contact Form 7 Integration
+  public $CF7 = false;        // Plugin module - Contact Form 7 Integration
 
   /**
    * $this->__construct()
@@ -72,6 +74,9 @@ class CSCore {
     // Core modules. No dependencies.
     require_once(CSCore_PATH . '/classes/caseswap-options.php');
     $this->Options = new CSCore_Options();
+
+    require_once(CSCore_PATH . '/classes/caseswap-case.php');
+    $this->Cases = new CSCore_Case();
 
     require_once(CSCore_PATH . '/classes/caseswap-email.php');
     $this->Email = new CSCore_Email();
