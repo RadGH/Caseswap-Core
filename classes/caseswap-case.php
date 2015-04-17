@@ -49,11 +49,29 @@ if ( !class_exists('CSCore_Case') ) {
 //        'menu_position' => 30, // Should be on top of the parent menu's list
         'menu_icon' => 'dashicons-portfolio', // http://melchoyce.github.io/dashicons/
 
+        'exclude_from_search' => true,  // Hide any result from search?
         'rewrite' => false,  // Whether you can access this post type via URL
         'query_var' => false, // The query var used to specify the post type ID (eg, ?my_query_var=1)
         'publicly_queryable' => false, // If true, accessible via search and using query vars
 
-        'supports' => false, // What features are supported
+        'supports' => array('title'), // What features are supported
+
+        'capabilities' => array(
+          "edit_post"              => "manage_options",
+          "read_post"              => "manage_options",
+          "delete_post"            => "manage_options",
+          "edit_posts"             => "manage_options",
+          "edit_others_posts"	     => "manage_options",
+          "publish_posts"          => "manage_options",
+          "read_private_posts"	   => "manage_options",
+          "delete_posts"           => "manage_options",
+          "delete_private_posts"   => "manage_options",
+          "delete_published_posts" => "manage_options",
+          "delete_others_posts"    => "manage_options",
+          "edit_private_posts"     => "manage_options",
+          "edit_published_posts"   => "manage_options",
+          "create_posts"           => "manage_options",
+        )
       );
 
       register_post_type('case', $args);
