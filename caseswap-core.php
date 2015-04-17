@@ -20,3 +20,6 @@ global $CSCore;
 
 // Create CaseSwap Core object, which will automatically initialize itself.
 $CSCore = new CSCore();
+
+// Include shortcode files
+include_once( CSCore_PATH . '/shortcodes/recent_cases.php' );
