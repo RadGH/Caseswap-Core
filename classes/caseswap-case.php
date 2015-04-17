@@ -15,7 +15,10 @@ if ( !class_exists('CSCore_Case') ) {
 
     public function __construct() {
       // This is in the plugins_loaded event. You can use init hooks here.
-      add_action( 'init', array(&$this, 'register_post_type') );
+      add_action( 'init', array( &$this, 'register_post_type' ) );
+
+      // This hook should be triggered by any of our functions which will send an email. Only once per submission (aka, don't trigger this for every investigator that gets an email)
+      add_action( 'caseswap_send_case', array( &$this, 'add_case_from_submission' ), 10, 6 );
     }
 
     function register_post_type() {
@@ -51,36 +54,19 @@ if ( !class_exists('CSCore_Case') ) {
         'publicly_queryable' => false, // If true, accessible via search and using query vars
 
         'supports' => false, // What features are supported
-
-        'capabilities' => array(
-          'edit_post'              => 'edit_post',
-          'read_post'              => 'read_post',
-          'delete_post'            => 'delete_post',
-          'edit_posts'             => 'edit_posts',
-          'edit_others_posts'      => 'edit_others_posts',
-          'publish_posts'          => 'publish_posts',
-          'read_private_posts'     => 'read_private_posts',
-          'delete_posts'           => 'delete_posts',
-          'delete_private_posts'   => 'delete_private_posts',
-          'delete_published_posts' => 'delete_published_posts',
-          'delete_others_posts'    => 'delete_others_posts',
-          'edit_private_posts'     => 'edit_private_posts',
-          'edit_published_posts'   => 'edit_published_posts',
-          'create_posts'           => '', // Nobody can create these posts!
-        ),
       );
 
       register_post_type('case', $args);
     }
 
-    function create_case( $name, $email, $type, $state, $message, $contact_method = false )
-    {
-      if (!$name || !$email || !$type || !$state || !$message) {
+    function create_case( $name, $email, $type, $state, $message, $contact_method = false ) {
+      if ( !$name && !$email ) {
+        // We gotta have something to log...
         return false;
       }
 
       $count = $this->count_cases_by_email( $email ); // Eg, "22"
-      $count+= 1; // This case is the next one in the series, so add one.
+      $count = $count + 1; // This case is the next one in the series, so add one.
 
       // Generate a readable version of the case number to display such as "Rad's 2nd Case"
       if ( $count == 1 ) $case_num = ""; // Don't show "Rad's 1st Case", that would be irritating
@@ -98,6 +84,7 @@ if ( !class_exists('CSCore_Case') ) {
       $args = array(
         'post_type' => 'case',
         'post_title' => $title,
+        'post_status' => 'publish',
       );
 
       $post_id = wp_insert_post( $args );
@@ -114,12 +101,17 @@ if ( !class_exists('CSCore_Case') ) {
       return $post_id;
     }
 
+    public function add_case_from_submission( $name, $email, $type, $state, $message, $contact_method ) {
+      $this->create_case( $name, $email, $type, $state, $message, $contact_method );
+    }
+
 
 
     // Find the number of cases submitted by this user (email address)
     public function count_cases_by_email( $email ) {
       $args = array(
         'post_type' => 'case',
+        'post_status' => 'any',
         'meta_query' => array(
           array(
             'key' => 'email',

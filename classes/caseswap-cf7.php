@@ -202,6 +202,10 @@ if ( !class_exists('CSCore_CF7') ) {
       $message = $this->get_cf7_field('message');
       $contact_method = $this->get_cf7_field('contact_method');
 
+      // Allow other modules to detect when we send emails
+      do_action( 'caseswap_send_case', $name, $email, $type, $state, $message, $contact_method ); // Hook to general case send method
+      do_action( 'caseswap_send_case_cf7', $name, $email, $type, $state, $message, $contact_method ); // Hook specifically to cf7 send method
+
       $tags = array(
 //        Already provided:
 //        '[name]'           => esc_html( $name ),
