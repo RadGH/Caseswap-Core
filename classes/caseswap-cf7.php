@@ -244,6 +244,13 @@ if ( !class_exists('CSCore_CF7') ) {
         $properties['mail']['body'] = $template;
       }
 
+      // Redirect to a thank you page when submission is accepted. This is handled by Contact Form 7 using an "additional setting"
+      $success_redirect = $options['cf7-success-page-id'];
+
+      if ( $success_redirect ) {
+        $properties['additional_settings'] = "on_sent_ok: \"location = '". get_permalink( $success_redirect ) ."';\"";
+      }
+
       $contact_form->set_properties( $properties );
 
       // Send the mail!
