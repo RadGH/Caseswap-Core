@@ -31,6 +31,7 @@ if ( !class_exists('CSCore_Options') ) {
         'name' => 'Settings',
         'file' => '/options/settings.php',
         'fields' => array(
+          'fallback-email',
           'investigator-types',
           'states',
         ),

@@ -131,6 +131,8 @@ if ( !class_exists('CSCore_CF7') ) {
       $options = $CSCore->Options->get_options();
 
       $allowed = true;
+      $has_recipient = false;
+
       $all_states = $options['states'];
       $all_types = $options['investigator-types'];
 
@@ -156,16 +158,28 @@ if ( !class_exists('CSCore_CF7') ) {
       if ( $allowed ) {
         $investigators = $CSCore->get_investigators( $state, $type );
 
-        if ( empty($investigators) ) {
-          // No investigators found, give an error
-          $index = null;
-          foreach( $tags as $k => $v ) if ( $v['name'] == 'type' ) $index = $k;
+        if ( !empty($investigators) ) {
+          $has_recipient = true;
+        }else {
+          // No investigators found, send to fallback else give an error
+          $fallback_email = $options['fallback-email'];
 
-          $result->invalidate( $tags[$index], "No investigators from " . esc_html($state) . " match this investigation type. Try something else." );
-        }else{
-          // Investigators are found, wait for send mail event
-          add_filter( 'wpcf7_before_send_mail', array(&$this, 'catch_cf7') );
+          if ($fallback_email) {
+            // A fallback email is set, so we can ignore this validation error.
+            $has_recipient = true;
+          }else{
+            // No investigators match the results, and no fallback email is set. Give a validation error.
+            $index = null;
+            foreach( $tags as $k => $v ) if ( $v['name'] == 'type' ) $index = $k;
+
+            $result->invalidate( $tags[$index], "No investigators from " . esc_html($state) . " match this investigation type. Try something else." );
+          }
         }
+      }
+
+      if ( $allowed && $has_recipient ) {
+        // Investigators are found, wait for send mail event
+        add_filter( 'wpcf7_before_send_mail', array(&$this, 'catch_cf7') );
       }
 
       return $result;
@@ -177,11 +191,12 @@ if ( !class_exists('CSCore_CF7') ) {
       $type = $this->get_cf7_field('type');
 
       if ( $state === null && $type === null ) {
-        // State and type not specified, do not intercept this message.
+        // State and type not specified, ignore this message.
         return $contact_form;
       }
 
       global $CSCore;
+      $options = $CSCore->Options->get_options();
       $user_ids = $CSCore->get_investigators( $state, $type );
 
       $properties = $contact_form->get_properties();
@@ -192,8 +207,15 @@ if ( !class_exists('CSCore_CF7') ) {
         // Add the email string as the recipient for this contact form
         $properties['mail']['recipient'] = $emails;
       }else{
-        // We should not get here! This email will go to the default recipient. Make the subject be an error message.
-        $properties['mail']['subject'] = 'CSCore Error #CF7_No_Investigators';
+        $fallback_email = $options['fallback-email'];
+
+        if ( $fallback_email ) {
+          // No investigators match the results, but we have a fallback email we can send to
+          $properties['mail']['recipient'] = $fallback_email;
+        }else{
+          // This email will go to the default recipient of the contact form because no other matches are available. Make the subject be an error message.
+          $properties['mail']['subject'] = 'CSCore Error #CF7_No_Investigators';
+        }
       }
 
       // Replace the contact form 7 email template with a custom one
