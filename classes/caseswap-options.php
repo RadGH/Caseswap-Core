@@ -114,6 +114,7 @@ if ( !class_exists('CSCore_Options') ) {
       'membership-subscription-level' => "", // ID of subscription level required to receive submitted cases
 
       // General Settings
+      'fallback-email' => '', // If set, cases get sent here instead of being rejected when no investigators match the selected criteria
       'investigator-types' => array(), // Array of strings (submitted as line-separated string)
       'states' => array(
         "Alabama",

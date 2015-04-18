@@ -16,6 +16,20 @@ $options = $CSCore->Options->get_options();
 <table class="form-table caseswap-form-table">
   <tbody>
 
+  <!-- Email: Fallback email-->
+  <tr>
+    <td style="width: 220px;">
+      <strong><label for="cs_options_fallback-email">Fallback Email</label></strong>
+      <p class="description"><small>Optional</small></p>
+    </td>
+    <td>
+      <input type="email" class="regular-text" name="cs_options[fallback-email]" id="cs_options_fallback-email" value="<?php
+        echo esc_attr( $options['fallback-email'] );
+        ?>" />
+      <p class="description">If a visitor submits a case that does not match any investigator profiles, it will be sent here.</p>
+    </td>
+  </tr>
+
   <!-- Textarea: Investigation Types -->
   <tr>
     <td style="width: 220px;">
