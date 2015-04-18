@@ -22,6 +22,10 @@ if ( !class_exists('CSCore_Users') ) {
       // Save custom fields from the above pages
       add_action( 'personal_options_update', array( &$this, 'save_user_custom_fields' ), 3 );
       add_action( 'edit_user_profile_update', array( &$this, 'save_user_custom_fields' ), 3 );
+
+      // Prevent investigators (subscribers) from viewing the wordpress dashboard
+      add_action( 'admin_init', array( &$this, 'redirect_investigators_from_dashboard' ) );
+      add_filter( 'show_admin_bar', array( &$this, 'hide_admin_bar_for_investigators' ) );
     }
 
     public function render_user_custom_fields( $user ) {
@@ -119,6 +123,35 @@ if ( !class_exists('CSCore_Users') ) {
           add_user_meta( $user_id, 'investigator-types', $val );
         }
       }
+    }
+
+
+    public function redirect_investigators_from_dashboard() {
+      if ( defined('DOING_AJAX') && DOING_AJAX ) {
+        return;
+      }
+
+      if ( current_user_can('subscriber') ) {
+        $membership_options = get_option('membership_options');
+        $account_page = isset($membership_options['account_page']) ? $membership_options['account_page'] : false;
+
+        if ( $account_page ) {
+          wp_redirect( get_permalink( $account_page ) );
+          exit;
+        }else{
+          wp_redirect( get_bloginfo('url') );
+          exit;
+        }
+      }
+    }
+
+
+    public function hide_admin_bar_for_investigators( $show_admin_bar ) {
+      if ( current_user_can('subscriber') ) {
+        return false;
+      }
+
+      return $show_admin_bar;
     }
 
   }
