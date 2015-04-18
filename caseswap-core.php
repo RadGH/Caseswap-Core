@@ -23,3 +23,4 @@ $CSCore = new CSCore();
 
 // Include shortcode files
 include_once( CSCore_PATH . '/shortcodes/recent_cases.php' );
+include_once( CSCore_PATH . '/shortcodes/investigator_settings.php' );
