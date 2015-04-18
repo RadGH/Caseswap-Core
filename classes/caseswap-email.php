@@ -220,7 +220,8 @@ if ( !class_exists('CSCore_Email') ) {
      * @param $phpmailer
      */
     public function phpmailer_init( $phpmailer ) {
-      $phpmailer->SMTPDebug = 1;
+      // Having issues? turn this on
+      // $phpmailer->SMTPDebug = 1;
 
       // Set the mailer type as per config above, this overrides the already called isMail method
       if ( $this->setting('smtp_enabled') != '' ) {
