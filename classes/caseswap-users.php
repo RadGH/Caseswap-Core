@@ -40,7 +40,7 @@ if ( !class_exists('CSCore_Users') ) {
 
       ?>
       <h3>Investigator Preferences</h3>
-      <input name="cs_nonce" value="<?php echo wp_create_nonce('caseswap-update-user'); ?>" type="hidden"/>
+      <input name="cs_nonce" value="<?php echo wp_create_nonce('caseswap-admin-update-user'); ?>" type="hidden"/>
 
       <table class="form-table">
         <tbody>
@@ -103,25 +103,21 @@ if ( !class_exists('CSCore_Users') ) {
       if ( !$nonce ) return;
       
       // Filled out the correct form, but nonce invalid?
-      if ( !wp_verify_nonce( $nonce, 'caseswap-update-user') ) return;
+      if ( !wp_verify_nonce( $nonce, 'caseswap-admin-update-user') ) return;
       
       // Get values submitted
-      $submit_state = isset($_REQUEST['cs_user']['state'])              ? (array) stripslashes_deep($_REQUEST['cs_user']['state'])              : null;
-      $submit_types = isset($_REQUEST['cs_user']['investigator-types']) ? (array) stripslashes_deep($_REQUEST['cs_user']['investigator-types']) : null;
+      $submit_state = isset($_REQUEST['cs_user']['state'])              ? (array) stripslashes_deep($_REQUEST['cs_user']['state'])              : array();
+      $submit_types = isset($_REQUEST['cs_user']['investigator-types']) ? (array) stripslashes_deep($_REQUEST['cs_user']['investigator-types']) : array();
 
       // Save each field. Each value is one meta value, do NOT use update_user_meta.
-      if ( $submit_state !== null ) {
-        delete_user_meta( $user_id, 'state' );
-        foreach( $submit_state as $val ) {
-          add_user_meta( $user_id, 'state', $val );
-        }
+      delete_user_meta( $user_id, 'state' );
+      foreach( $submit_state as $val ) {
+        add_user_meta( $user_id, 'state', $val );
       }
 
-      if ( $submit_types !== null ) {
-        delete_user_meta( $user_id, 'investigator-types' );
-        foreach( $submit_types as $val ) {
-          add_user_meta( $user_id, 'investigator-types', $val );
-        }
+      delete_user_meta( $user_id, 'investigator-types' );
+      foreach( $submit_types as $val ) {
+        add_user_meta( $user_id, 'investigator-types', $val );
       }
     }
 
