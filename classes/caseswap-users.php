@@ -47,10 +47,10 @@ if ( !class_exists('CSCore_Users') ) {
 
           <tr>
             <th>
-              <label for="cs-state">State:</label>
+              <label for="cs-state">Licensed States:</label>
             </th>
             <td>
-              <select name="cs_user[state]" id="cs-state">
+              <select name="cs_user[state][]" id="cs-state" multiple>
                 <option value="">&ndash; Select &ndash;</option>
                 <?php
                 foreach( $all_states as $this_state ) {

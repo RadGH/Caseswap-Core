@@ -34,10 +34,10 @@ function shortcode_investigator_settings( $atts, $content = '' ) {
   ?>
   <form class="investigator-settings-form" action="">
 
-    <p><strong>What State do you conduct your operations?</strong></p>
+    <p><strong>What State(s) do you conduct your operations?</strong></p>
 
     <p>
-      <select name="cs_user[state]" id="cs-state">
+      <select name="cs_user[state][]" id="cs-state" multiple>
         <option value="">&ndash; Select &ndash;</option>
         <?php
         foreach( $all_states as $this_state ) {
